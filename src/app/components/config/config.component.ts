@@ -23,7 +23,7 @@ export class ConfigComponent implements OnInit {
     const categories = new Array<Category>;
     categories.push(new Category("Gato", 0, 0.5));
     categories.push(new Category("Perro", 0.5, Number.MAX_SAFE_INTEGER));
-    this.configuration = new Configuration("Perros y gatos", "Permite identificar perros o gatos.", "./assets/perros-gatos/model.json", 100, 100, style, categories);
+    this.configuration = new Configuration("Perros y gatos", "", "./assets/perros-gatos/model.json", 100, 100, style, categories);
   }
 
   ngOnInit(): void {

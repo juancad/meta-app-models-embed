@@ -4,7 +4,7 @@
 
     <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasBottomLabel">Configuración del modelo</h5>
+            <h5 class="offcanvas-title" id="offcanvasBottomLabel">Configuración de la vista de la aplicación</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body small">
@@ -74,7 +74,7 @@
                     </div>
                     <div class="col-md">
                         Color de los títulos: <div class="colorPicker" [style.background]="configuration.style.titleColor"
-                            [(colorPicker)]="configuration.style.titleColor" [cpPosition]="'top-right'">{{configuration.style.titleColor}}</div>
+                            [(colorPicker)]="configuration.style.titleColor">{{configuration.style.titleColor}}</div>
                     </div>
                 </div><br />
             </div>
@@ -82,8 +82,8 @@
     </div>
     <div class="buttons">
         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
-            aria-controls="offcanvasBottom">Configuración del modelo</button>
-        <button type="button" class="btn btn-secondary">Descargar app</button>
-        <button type="button" class="btn btn-warning">Añadir app a la lista</button>
+            aria-controls="offcanvasBottom">Configuración de la vista</button>
+        <button type="button" class="btn btn-secondary">Descargar app actual</button>
+        <button type="button" class="btn btn-warning">Añadir a la lista</button>
     </div>
 </div>

@@ -1,36 +1,15 @@
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@-webkit-keyframes rotate {
-    from {
-        -webkit-transform: rotate(0deg);
-    }
-
-    to {
-        -webkit-transform: rotate(360deg);
-    }
-}
-
-.navbar img {
-    -webkit-animation: 5s rotate linear infinite;
-    animation: 5s rotate linear infinite;
-    -webkit-transform-origin: 50% 50%;
-    transform-origin: 50% 50%;
-    margin-left: 10px;
-    margin-right: 5px;
-}
-
 .navbar button {
     margin-right: 10px;
 }
 
 .navbar-dark .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.95%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e")
+}
+
+div#offcanvasRight {
+    width: 250px;
+}
+
+.navbar-brand {
+    margin-left: 10px;
 }
