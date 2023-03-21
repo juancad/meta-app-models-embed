@@ -1,0 +1,89 @@
+<div id="config">
+    Vista previa de la aplicación:
+    <app-modelo [configuration]="configuration"></app-modelo>
+
+    <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasBottomLabel">Configuración del modelo</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body small">
+            <form [formGroup]="form">
+                <div class="row">
+                    <label>Selecciona un nuevo modelo:<br /></label>
+                    <input type="file" webkitdirectory directory multiple class="form-control-file">
+                    <label>Debes seleccionar un directorio que contenga el archivo model.json y los .bin
+                        correspondientes.</label>
+                </div>
+                <br />
+                <div class="row g-2">
+                    <div class="col-md">
+                        <label>Título de la aplicación</label>
+                        <input #title (ngModelChange)="setTitle(title.value)" type="text" formControlName="title"
+                            class="form-control" placeholder="Título de la aplicación"
+                            [ngClass]="{'is-invalid': form.controls['title'].errors}">
+                    </div>
+                    <div class="col-md">
+                        <label>Descripción de la aplicación</label>
+                        <textarea #description (ngModelChange)="setDescription(description.value)" type="text"
+                            formControlName="description" class="form-control"
+                            placeholder="Descripción de la aplicación"
+                            [ngClass]="{'is-invalid': form.controls['description'].errors}"></textarea>
+                    </div>
+                </div>
+            </form><br />
+            <div class="row g-2">
+                <div class="col-md">
+                    <label>Selecciona la alineación de la cámara:</label>
+                    <div class="align-buttons">
+                        <button class="btn btn-outline-dark" (click)="setCamAlign(Align.left)"><i
+                                class="bi bi-text-left"></i></button>
+                        <button class="btn btn-outline-dark" (click)="setCamAlign(Align.center)"><i
+                                class="bi bi-text-center"></i></button>
+                        <button class="btn btn-outline-dark" (click)="setCamAlign(Align.right)"><i
+                                class="bi bi-text-right"></i></button>
+                        <button class="btn btn-outline-dark" (click)="setCamAlign(Align.justify)"><i
+                                class="bi bi-justify"></i></button>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <label>Selecciona la alineación del texto:</label>
+                    <div class="align-buttons">
+                        <button class="btn btn-outline-dark" (click)="setTextAlign(Align.left)"><i
+                                class="bi bi-text-left"></i></button>
+                        <button class="btn btn-outline-dark" (click)="setTextAlign(Align.center)"><i
+                                class="bi bi-text-center"></i></button>
+                        <button class="btn btn-outline-dark" (click)="setTextAlign(Align.right)"><i
+                                class="bi bi-text-right"></i></button>
+                        <button class="btn btn-outline-dark" (click)="setTextAlign(Align.justify)"><i
+                                class="bi bi-justify"></i></button>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md">
+                        Color de fondo: <div class="colorPicker" [cpToggle]="true"
+                            [style.background]="configuration.style.backgroundColor"
+                            [(colorPicker)]="configuration.style.backgroundColor" [cpPosition]="'top-right'">
+                            {{configuration.style.backgroundColor}}
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        Color del texto: <div class="colorPicker" [style.background]="configuration.style.contentColor"
+                            [(colorPicker)]="configuration.style.contentColor" [cpPosition]="'top-right'">{{configuration.style.contentColor}}
+                        </div>
+                    </div>
+                    <div class="col-md">
+                        Color de los títulos: <div class="colorPicker" [style.background]="configuration.style.titleColor"
+                            [(colorPicker)]="configuration.style.titleColor" [cpPosition]="'top-right'">{{configuration.style.titleColor}}</div>
+                    </div>
+                </div><br />
+            </div>
+        </div>
+    </div>
+    <div class="buttons">
+        <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
+            aria-controls="offcanvasBottom">Configuración del modelo</button>
+        <button type="button" class="btn btn-secondary">Descargar app</button>
+        <button type="button" class="btn btn-warning">Añadir app a la lista</button>
+    </div>
+</div>

@@ -1,0 +1,30 @@
+#config {
+    margin: 10px;
+}
+
+.buttons {
+    margin-top: 10px;
+}
+.buttons button {
+    margin-right: 10px;
+}
+
+#offcanvasBottom {
+    --bs-offcanvas-height: 55vh;
+}
+
+.align-buttons button {
+    margin-right: 5px;
+}
+
+.colorPicker {
+    border: 2px solid black;
+    display: inline-block;
+    padding: 0px 5px 0px 5px;
+    margin: 0px 5px 0px 5px;
+    color: #6a6a6a;
+}
+
+.color-picker {
+    position: relative;
+}

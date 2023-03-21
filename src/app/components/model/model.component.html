@@ -1,0 +1,16 @@
+<div style="padding: 10px;"
+    [ngStyle]="{'text-align': getTextAlign(), 'background-color': configuration.style.backgroundColor, 'color': configuration.style.contentColor, 'font-family': configuration.style.fontFamily}">
+    <h1 [ngStyle]="{'color': configuration.style.titleColor, 'font-family': configuration.style.fontFamily}">{{configuration.title}}
+    </h1>
+    <p>{{configuration.description}}</p>
+    <div [ngStyle]="{'text-align': getCamAlign()}">
+        <video id="video" hidden></video>
+        <canvas id="canvas" width="400" height="400" style="max-width: 100%;"></canvas>
+        <canvas id="canvasAux" hidden width="100" height="100" style="max-width: 100; display: none"></canvas>
+        <button id="cambiarCamara" class="btn btn-light"  aria-label="Rotar cámara"
+            (click)=cambiarCamara()><i class="bi bi-arrow-repeat"></i></button>
+    </div>
+    <h1 color="primary" [ngStyle]="{'color': configuration.style.titleColor, 'font-family': configuration.style.fontFamily}">
+        Resultado: {{respuesta}}</h1>
+    {{resultado}}
+</div>
