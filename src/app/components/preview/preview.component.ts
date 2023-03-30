@@ -4,11 +4,11 @@ import { Configuration } from 'src/app/models/configuration.model';
 import { Align } from 'src/app/models/style.model';
 
 @Component({
-  selector: 'app-modelo',
-  templateUrl: './model.component.html',
-  styleUrls: ['./model.component.scss']
+  selector: 'app-preview',
+  templateUrl: './preview.component.html',
+  styleUrls: ['./preview.component.scss']
 })
-export class ModelComponent implements OnInit {
+export class PreviewComponent implements OnInit {
   @Input() configuration: Configuration;
   modelo: any;
   width: number;
@@ -140,7 +140,6 @@ export class ModelComponent implements OnInit {
 
       let tensor = tf.tensor4d(arr);
       let resultado = this.modelo.predict(tensor).dataSync();
-      //const predictions = Array.from(resultado);
       this.resultado = resultado;
       
       for (const element of this.configuration.categories) {

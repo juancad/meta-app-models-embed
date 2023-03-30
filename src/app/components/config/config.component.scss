@@ -2,9 +2,15 @@
     margin: 10px;
 }
 
-.buttons button {
+.buttons button,
+.buttons .alert {
     margin-top: 10px;
     margin-right: 10px;
+}
+
+.buttons .alert {
+    display: inlne-block;
+    padding: 5px;
 }
 
 #offcanvasBottom {
@@ -25,4 +31,32 @@
 
 .color-picker {
     position: relative;
+}
+
+div.alert {
+    display: inline-block;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+.alert button.close {
+    color: inherit;
+    background-color: transparent;
+    border: 0;
+    -webkit-appearance: none;
+    float: right;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-shadow: 0 1px 0 #fff;
+    opacity: 0.5;
+    line-height: 1;
+    margin-top: -2.5px;
+    margin-right: -10px;
+    margin-left: 10px;
+}
+
+.alert button.close:hover {
+    color: black,
 }

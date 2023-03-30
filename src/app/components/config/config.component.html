@@ -1,6 +1,6 @@
 <div id="config">
     Vista previa de la aplicación:
-    <app-modelo [configuration]="configuration"></app-modelo>
+    <app-preview [configuration]="configuration"></app-preview>
 
     <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
         <div class="offcanvas-header">
@@ -11,7 +11,8 @@
             <form [formGroup]="form">
                 <div class="row">
                     <label>Selecciona un nuevo modelo:<br /></label>
-                    <input type="file" webkitdirectory directory multiple class="form-control-file">
+                    <input type="file" (change)="onFileSelected($event)" accept=".json,.bin" webkitdirectory directory
+                        multiple class="form-control-file">
                     <label>Debes seleccionar un directorio que contenga el archivo model.json y los .bin
                         correspondientes.</label>
                 </div>
@@ -69,12 +70,15 @@
                     </div>
                     <div class="col-md">
                         Color del texto: <div class="colorPicker" [style.background]="configuration.style.contentColor"
-                            [(colorPicker)]="configuration.style.contentColor" [cpPosition]="'top-right'">{{configuration.style.contentColor}}
+                            [(colorPicker)]="configuration.style.contentColor" [cpPosition]="'top-right'">
+                            {{configuration.style.contentColor}}
                         </div>
                     </div>
                     <div class="col-md">
-                        Color de los títulos: <div class="colorPicker" [style.background]="configuration.style.titleColor"
-                            [(colorPicker)]="configuration.style.titleColor">{{configuration.style.titleColor}}</div>
+                        Color de los títulos: <div class="colorPicker"
+                            [style.background]="configuration.style.titleColor"
+                            [(colorPicker)]="configuration.style.titleColor" [cpPosition]="'top-right'">
+                            {{configuration.style.titleColor}}</div>
                     </div>
                 </div><br />
             </div>
@@ -83,7 +87,13 @@
     <div class="buttons">
         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
             aria-controls="offcanvasBottom">Configuración de la vista</button>
-        <button type="button" class="btn btn-secondary">Descargar app actual</button>
-        <button type="button" class="btn btn-warning">Añadir a la lista</button>
+        <button type="button" id="downloadBtn" class="btn btn-secondary" (click)="download()">Descargar app
+            actual</button>
+        <button type="button" class="btn btn-warning" (click)="addConfig()">Añadir a la lista</button>
     </div>
+
+    <div *ngIf="message!=''" class="alert" [ngClass]="{'alert-danger': success === false, 'alert-success': success === true}" role="alert">{{message}} <button type="button" class="close"
+            data-dismiss="alert" aria-label="Close" (click)="closeMessage()">
+            <span>&times;</span>
+        </button></div>
 </div>

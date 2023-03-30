@@ -1,9 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Configuration } from 'src/app/models/configuration.model';
 import { Align } from 'src/app/models/style.model';
-import { Style } from 'src/app/models/style.model';
-import { Category } from 'src/app/models/category.model';
+import { AppsService } from 'src/app/services/apps.service';
 
 @Component({
   selector: 'app-config',
@@ -13,17 +12,13 @@ import { Category } from 'src/app/models/category.model';
 export class ConfigComponent implements OnInit {
   @ViewChild('description') description: any;
   @ViewChild('title') title: any;
-  configuration: Configuration;
+  @Input() configuration: Configuration;
   Align = Align;
   form: FormGroup;
-  mensaje: string;
+  message: string = "";
+  success:boolean = true;
 
-  constructor(private fb: FormBuilder) {
-    const style = new Style("#000000", "#000000", "#FFFFFF", "Calibri", Align.center, Align.center);
-    const categories = new Array<Category>;
-    categories.push(new Category("Gato", 0, 0.5));
-    categories.push(new Category("Perro", 0.5, Number.MAX_SAFE_INTEGER));
-    this.configuration = new Configuration("Perros y gatos", "", "./assets/perros-gatos/model.json", 100, 100, style, categories);
+  constructor(private fb: FormBuilder, private appsService: AppsService) {
   }
 
   ngOnInit(): void {
@@ -42,6 +37,7 @@ export class ConfigComponent implements OnInit {
         ]),
       ],
     });
+
   }
 
   setTextAlign(textAlign: Align) {
@@ -62,5 +58,58 @@ export class ConfigComponent implements OnInit {
     if (!this.form.controls['description'].errors) {
       this.configuration.description = description;
     }
+  }
+
+  onFileSelected(event: any) {
+    const files = event.target.files;
+    const allowedFormats = ["json", "bin"];
+    const bins = [];
+    let model;
+
+    //filtro de archivos
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const extension = file.name.split(".").pop();
+
+      if (extension == "json") {
+        model = file;
+      }
+      if (extension == "bin") {
+        bins.push(file);
+      }
+    }
+    this.configuration.modelURL = model.webkitRelativePath;
+  }
+
+  download() {
+    const html = "<div id='main'>\n<h1>" + this.configuration.title + "</h1>\n<p>" + this.configuration.description + "</p>\n</div>\n";
+    const css = "<style>body {background-color:" + this.configuration.style.backgroundColor + "; color: " + this.configuration.style.contentColor + "}\nh1 {color: " + this.configuration.style.titleColor + "}</style>";
+    const js = '<script></script>';
+    const filename = 'index.html';
+
+    const blob = new Blob([html, css, js], { type: 'text/html' });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  addConfig() {
+    if(this.appsService.addConfig(this.configuration)) {
+      this.message = "Se ha añadido correctamente la configuración actual a la lista.";
+      this.success = true;
+    }
+    else {
+      this.message = "La configuración actual no puede añadirse a la lista, ya existe otra configuración con el mismo título.";
+      this.success = false;
+    }
+  }
+
+  closeMessage() {
+    this.message = "";
   }
 }

@@ -11,7 +11,7 @@
     </button>
 </nav>
 
-<router-outlet></router-outlet>
+<app-config [configuration]="selectedConfig"></app-config>
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
     <div class="offcanvas-header">
@@ -19,7 +19,11 @@
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        ...
+        <div class="list-group">
+            <a *ngFor="let config of configurations" [class.active]="config.title === getSelected().title" (click)="onSelect(config)" class="list-group-item list-group-item-action">
+                {{config.title}}
+            </a>
+        </div>
     </div>
 </div>
 
