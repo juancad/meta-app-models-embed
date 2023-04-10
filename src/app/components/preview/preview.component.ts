@@ -18,16 +18,16 @@ export class PreviewComponent implements OnInit {
   ctx: any;
   currentStream: MediaStream;
   facingMode: string;
-  respuesta: String;
-  resultado: number;
+  category: String;
+  result: number;
 
   constructor() {
     this.width = 400;
     this.height = 400;
     this.modelo = null;
     this.facingMode = "user";
-    this.respuesta = "Cargando...";
-    this.resultado = 0;
+    this.category = "Cargando...";
+    this.result = 0;
   }
 
   ngOnInit(): void {
@@ -119,32 +119,38 @@ export class PreviewComponent implements OnInit {
       ctxAux.drawImage(this.video, 0, 0, this.width, this.height, 0, 0, this.configuration.width, this.configuration.height);
       let imgData = ctxAux.getImageData(0, 0, this.configuration.width, this.configuration.height);
 
-      let arr = [];
-      let arr100 = [];
+      let imgGrayscale = [];
+      let imgGrayscaleRow = [];
 
+      //transforma la imagen a blanco y negro
       for (let i = 0; i < imgData.data.length; i += 4) {
         let rojo = imgData.data[i] / 255;
         let verde = imgData.data[i + 1] / 255;
         let azul = imgData.data[i + 2] / 255;
 
-        let gris = (rojo + verde + azul) / 3;
+        let gris = (rojo * 0.299) + (verde * 0.587) + (azul * 0.114);
 
-        arr100.push([gris]);
-        if (arr100.length == 100) {
-          arr.push(arr100);
-          arr100 = [];
+        //imgGrayscaleRow guarda el valor de gris de cada pixel de la fila de la imagen
+        imgGrayscaleRow.push([gris]);
+
+        //cada vez que se llega al ancho de la imagen se añade una nueva fila
+        if (imgGrayscaleRow.length == this.configuration.width) {
+          //guarda la fila en la matriz
+          imgGrayscale.push(imgGrayscaleRow);
+          //reinicia arrAux para volver a guardar otra fila en la siguiente iteración
+          imgGrayscaleRow = [];
         }
       }
 
-      arr = [arr];
+      imgGrayscale = [imgGrayscale];
 
-      let tensor = tf.tensor4d(arr);
-      let resultado = this.modelo.predict(tensor).dataSync();
-      this.resultado = resultado;
-      
+      let tensor = tf.tensor4d(imgGrayscale);
+      let result = this.modelo.predict(tensor).dataSync();
+      this.result = result;
+
       for (const element of this.configuration.categories) {
-        if (this.resultado >= element.minValue && this.resultado < element.maxValue) {
-          this.respuesta = element.name;
+        if (this.result >= element.minValue && this.result < element.maxValue) {
+          this.category = element.name;
         }
       }
     }

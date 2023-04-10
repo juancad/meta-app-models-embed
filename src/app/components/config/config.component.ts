@@ -100,7 +100,7 @@ export class ConfigComponent implements OnInit {
 
   addConfig() {
     if(this.appsService.addConfig(this.configuration)) {
-      this.message = "Se ha añadido correctamente la configuración actual a la lista.";
+      this.message = "Se ha añadido correctamente la aplicación actual a la lista.";
       this.success = true;
     }
     else {
