@@ -19,7 +19,7 @@ export class PreviewComponent implements OnInit {
   currentStream: MediaStream;
   facingMode: string;
   category: String;
-  result: number;
+  output: number;
 
   constructor() {
     this.width = 400;
@@ -27,7 +27,7 @@ export class PreviewComponent implements OnInit {
     this.modelo = null;
     this.facingMode = "user";
     this.category = "Cargando...";
-    this.result = 0;
+    this.output = 0;
   }
 
   ngOnInit(): void {
@@ -112,44 +112,23 @@ export class PreviewComponent implements OnInit {
 
   predecir() {
     if (this.modelo != null) {
-      let canvasAux = <HTMLCanvasElement>document.getElementById("canvasAux");
-      let ctxAux = canvasAux.getContext('2d', { willReadFrequently: true });
+      // obtiene los datos de la imagen de la cámara
+      let imageData = this.ctx.getImageData(0, 0, this.width, this.height);
+      let imageTensor = tf.browser.fromPixels(imageData).toFloat();
+      // redimensiona la imagen al tamaño requerido por el tensor
+      let resizedTensor = tf.image.resizeBilinear(imageTensor, [this.configuration.height, this.configuration.width]);
 
-      //redimensiona la imagen de la cámara a las dimensiones del modelo (definidas en configuration)
-      ctxAux.drawImage(this.video, 0, 0, this.width, this.height, 0, 0, this.configuration.width, this.configuration.height);
-      let imgData = ctxAux.getImageData(0, 0, this.configuration.width, this.configuration.height);
+      // convertir la imagen a escala de grises
+      let grayTensor = resizedTensor.mean(2, true);
+      // normaliza los valores de los píxeles
+      let normalizedTensor = grayTensor.div(255);
+      let tensor = normalizedTensor.reshape([1, this.configuration.width, this.configuration.height, 1]);
 
-      let imgGrayscale = [];
-      let imgGrayscaleRow = [];
-
-      //transforma la imagen a blanco y negro
-      for (let i = 0; i < imgData.data.length; i += 4) {
-        let rojo = imgData.data[i] / 255;
-        let verde = imgData.data[i + 1] / 255;
-        let azul = imgData.data[i + 2] / 255;
-
-        let gris = (rojo * 0.299) + (verde * 0.587) + (azul * 0.114);
-
-        //imgGrayscaleRow guarda el valor de gris de cada pixel de la fila de la imagen
-        imgGrayscaleRow.push([gris]);
-
-        //cada vez que se llega al ancho de la imagen se añade una nueva fila
-        if (imgGrayscaleRow.length == this.configuration.width) {
-          //guarda la fila en la matriz
-          imgGrayscale.push(imgGrayscaleRow);
-          //reinicia arrAux para volver a guardar otra fila en la siguiente iteración
-          imgGrayscaleRow = [];
-        }
-      }
-
-      imgGrayscale = [imgGrayscale];
-
-      let tensor = tf.tensor4d(imgGrayscale);
-      let result = this.modelo.predict(tensor).dataSync();
-      this.result = result;
+      let output = this.modelo.predict(tensor).dataSync();
+      this.output = output;
 
       for (const element of this.configuration.categories) {
-        if (this.result >= element.minValue && this.result < element.maxValue) {
+        if (this.output >= element.minValue && this.output < element.maxValue) {
           this.category = element.name;
         }
       }
