@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Configuration } from 'src/app/models/configuration.model';
 import { Align } from 'src/app/models/style.model';
 import { AppsService } from 'src/app/services/apps.service';
+import * as JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-config',
@@ -16,7 +18,7 @@ export class ConfigComponent implements OnInit {
   Align = Align;
   form: FormGroup;
   message: string = "";
-  success:boolean = true;
+  success: boolean = true;
 
   constructor(private fb: FormBuilder, private appsService: AppsService) {
   }
@@ -83,23 +85,21 @@ export class ConfigComponent implements OnInit {
 
   download() {
     const html = "<div id='main'>\n<h1>" + this.configuration.title + "</h1>\n<p>" + this.configuration.description + "</p>\n</div>\n";
-    const css = "<style>body {background-color:" + this.configuration.style.backgroundColor + "; color: " + this.configuration.style.contentColor + "}\nh1 {color: " + this.configuration.style.titleColor + "}</style>";
-    const js = '<script></script>';
-    const filename = 'index.html';
+    const css = "body {background-color:" + this.configuration.style.backgroundColor + "; color: " + this.configuration.style.contentColor + "}\nh1 {color: " + this.configuration.style.titleColor + "}";
+    const js = '';
+    const zip = new JSZip();
 
-    const blob = new Blob([html, css, js], { type: 'text/html' });
-    const url = window.URL.createObjectURL(blob);
+    zip.file("index.html", html);
+    zip.file("style.css", css);
+    zip.file("script.js", js);
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    zip.generateAsync({ type: "blob" }).then(function (content) {
+      saveAs(content, "app.zip");
+    });
   }
 
   addConfig() {
-    if(this.appsService.addConfig(this.configuration)) {
+    if (this.appsService.addConfig(this.configuration)) {
       this.message = "Se ha añadido correctamente la aplicación actual a la lista.";
       this.success = true;
     }
