@@ -10,9 +10,9 @@ import { Align } from 'src/app/models/style.model';
 })
 export class PreviewComponent implements OnInit {
   @Input() configuration: Configuration;
-  modelo: any;
-  width: number;
-  height: number;
+  model: any;
+  camWidth: number;
+  camHeight: number;
   video: HTMLVideoElement;
   canvas: HTMLCanvasElement;
   ctx: any;
@@ -20,11 +20,12 @@ export class PreviewComponent implements OnInit {
   facingMode: string;
   category: String;
   output: any;
+  inputShape: any;
 
   constructor() {
-    this.width = 400;
-    this.height = 400;
-    this.modelo = null;
+    this.camWidth = 400;
+    this.camHeight = 400;
+    this.model = null;
     this.facingMode = "user";
     this.category = "Cargando...";
     this.output = 0;
@@ -39,7 +40,11 @@ export class PreviewComponent implements OnInit {
 
   async loadModel() {
     console.log("Cargando modelo...");
-    this.modelo = await tf.loadLayersModel(this.configuration.modelURL);
+    this.model = await tf.loadLayersModel(this.configuration.modelURL);
+    //guardo información del tensor del modelo
+    //el tensor de 4D será de la forma: [batchSize, height, width, channels], en el caso de 3D [height, width, channels]
+    this.inputShape = this.model.inputs[0].shape;
+    console.log(this.inputShape);
     console.log("Modelo cargado.");
   }
 
@@ -52,7 +57,7 @@ export class PreviewComponent implements OnInit {
     let opciones = {
       audio: false,
       video: {
-        facingMode: "user", width: this.width, height: this.height
+        facingMode: "user", width: this.camWidth, height: this.camHeight
       }
     }
 
@@ -90,8 +95,8 @@ export class PreviewComponent implements OnInit {
       audio: false,
       video: {
         facingMode: this.facingMode,
-        width: this.width,
-        height: this.height
+        width: this.camWidth,
+        height: this.camHeight
       }
     }
 
@@ -106,28 +111,27 @@ export class PreviewComponent implements OnInit {
   }
 
   procesarCamara() {
-    this.ctx.drawImage(this.video, 0, 0, this.width, this.height, 0, 0, this.width, this.height);
+    this.ctx.drawImage(this.video, 0, 0, this.camWidth, this.camHeight, 0, 0, this.camWidth, this.camHeight);
     setTimeout(this.procesarCamara.bind(this), 20);
   }
 
   predecir() {
-    if (this.modelo != null) {
+    if (this.model != null) {
       //el método tidy() de TensorFlow.js libera la memoria automáticamente después de ejecutar una serie de operaciones
       tf.tidy(() => {
-        let imageData = this.ctx.getImageData(0, 0, this.width, this.height);
+        let imageData = this.ctx.getImageData(0, 0, this.camWidth, this.camHeight);
         let imageTensor = tf.browser.fromPixels(imageData).toFloat();
 
         // redimensiona la imagen al tamaño requerido por el tensor
-        let resizedTensor = tf.image.resizeBilinear(imageTensor, [this.configuration.height, this.configuration.width]);
+        imageTensor = tf.image.resizeBilinear(imageTensor, [this.inputShape[this.inputShape.length - 3], this.inputShape[this.inputShape.length - 2]]);
 
         // convertir la imagen a escala de grises
-        let grayTensor = resizedTensor.mean(2, true);
-
+        imageTensor = imageTensor.mean(2, true);
         // normaliza los valores de los píxeles
-        let normalizedTensor = grayTensor.div(255);
+        imageTensor = imageTensor.div(255);
 
-        let tensor = normalizedTensor.reshape([1, this.configuration.width, this.configuration.height, 1]);
-        this.output = this.modelo.predict(tensor).dataSync();
+        let tensor = imageTensor.reshape([1, this.inputShape[this.inputShape.length - 3], this.inputShape[this.inputShape.length - 2], this.inputShape[this.inputShape.length - 1]]);
+        this.output = this.model.predict(tensor).dataSync();
 
         //const indice = tf.argMax(this.output).dataSync()[0];
         //console.log(indice);
