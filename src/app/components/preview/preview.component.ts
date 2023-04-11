@@ -19,7 +19,7 @@ export class PreviewComponent implements OnInit {
   currentStream: MediaStream;
   facingMode: string;
   category: String;
-  output: any;
+  output: number;
   inputShape: any;
 
   constructor() {
@@ -124,9 +124,10 @@ export class PreviewComponent implements OnInit {
 
         // redimensiona la imagen al tamaño requerido por el tensor
         imageTensor = tf.image.resizeBilinear(imageTensor, [this.inputShape[this.inputShape.length - 3], this.inputShape[this.inputShape.length - 2]]);
-
-        // convertir la imagen a escala de grises
-        imageTensor = imageTensor.mean(2, true);
+        // convertir la imagen a escala de grises si el modelo utiliza sólo 1 canal de color
+        if(this.inputShape.length == 4 && this.inputShape[this.inputShape.length-1] == 1) {
+          imageTensor = imageTensor.mean(2, true);
+        }
         // normaliza los valores de los píxeles
         imageTensor = imageTensor.div(255);
 

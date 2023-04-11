@@ -6,7 +6,7 @@
     <p>{{configuration.description}}</p>
     <div [ngStyle]="{'text-align': getCamAlign()}">
         <video id="video" autoplay loop muted playsinline hidden></video>
-        <canvas id="canvas" width="400" height="400" style="max-width: 100%;"></canvas>
+        <canvas id="canvas" [width]="camWidth" [height]="camHeight" style="max-width: 100%;"></canvas>
         <button id="cambiarCamara" class="btn btn-light" aria-label="Rotar cámara" (click)=cambiarCamara()><i
                 class="bi bi-arrow-repeat"></i></button>
     </div>
