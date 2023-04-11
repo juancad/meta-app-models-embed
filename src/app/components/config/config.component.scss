@@ -14,11 +14,7 @@
 }
 
 #offcanvasBottom {
-    --bs-offcanvas-height: 55vh;
-}
-
-.align-buttons button {
-    margin-right: 5px;
+    --bs-offcanvas-height: 60vh;
 }
 
 .colorPicker {
@@ -59,4 +55,13 @@ div.alert {
 
 .alert button.close:hover {
     color: black,
+}
+
+.card {
+    padding: 0px;
+}
+
+input.colorPicker {
+    border-radius: 0px .375rem .375rem 0px !important;
+    border: var(--bs-border-width) solid var(--bs-border-color);
 }

@@ -1,6 +1,6 @@
 <div style="padding: 10px;"
-    [ngStyle]="{'text-align': getTextAlign(), 'background-color': configuration.style.backgroundColor, 'color': configuration.style.contentColor, 'font-family': configuration.style.fontFamily}">
-    <h1 [ngStyle]="{'color': configuration.style.titleColor, 'font-family': configuration.style.fontFamily}">{{configuration.title}}
+    [ngStyle]="{'text-align': getTextAlign(), 'background-color': configuration.style.backgroundColor, 'color': configuration.style.contentColor, 'font-family': configuration.style.contentFontFamily}">
+    <h1 [ngStyle]="{'color': configuration.style.titleColor, 'font-family': configuration.style.titleFontFamily}">{{configuration.title}}
     </h1>
     <p>{{configuration.description}}</p>
     <div [ngStyle]="{'text-align': getCamAlign()}">
@@ -9,7 +9,7 @@
         <button id="cambiarCamara" class="btn btn-light"  aria-label="Rotar cámara"
             (click)=cambiarCamara()><i class="bi bi-arrow-repeat"></i></button>
     </div>
-    <h1 color="primary" [ngStyle]="{'color': configuration.style.titleColor, 'font-family': configuration.style.fontFamily}">
-        Resultado: {{category}}</h1>
+    <h2 color="primary" [ngStyle]="{'color': configuration.style.titleColor, 'font-family': configuration.style.titleFontFamily}">
+        Resultado: {{category}}</h2>
     {{output}}
 </div>

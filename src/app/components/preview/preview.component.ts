@@ -128,8 +128,8 @@ export class PreviewComponent implements OnInit {
       let tensor = normalizedTensor.reshape([1, this.configuration.width, this.configuration.height, 1]);
       this.output = this.modelo.predict(tensor).dataSync();
 
-      const indice = tf.argMax(this.output).dataSync()[0];
-      console.log(indice);
+      //const indice = tf.argMax(this.output).dataSync()[0];
+      //console.log(indice);
 
       for (const element of this.configuration.categories) {
         if (this.output >= element.minValue && this.output < element.maxValue) {

@@ -12,7 +12,7 @@ export class AppsService {
   configs: Configuration[];
 
   constructor() {
-    const style = new Style("#000000", "#000000", "#FFFFFF", "Calibri", Align.center, Align.center);
+    const style = new Style("#000000", "#000000", "#FFFFFF", "Arial", "Arial", Align.center, Align.center);
     const categories = new Array<Category>;
     categories.push(new Category("Gato", 0, 0.5));
     categories.push(new Category("Perro", 0.5, Number.MAX_SAFE_INTEGER));

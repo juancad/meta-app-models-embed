@@ -5,6 +5,7 @@ import { Align } from 'src/app/models/style.model';
 import { AppsService } from 'src/app/services/apps.service';
 import * as JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { Category } from 'src/app/models/category.model';
 
 @Component({
   selector: 'app-config',
@@ -19,8 +20,16 @@ export class ConfigComponent implements OnInit {
   form: FormGroup;
   message: string = "";
   success: boolean = true;
+  fontList: { name: string; value: string; }[];
 
   constructor(private fb: FormBuilder, private appsService: AppsService) {
+    this.fontList = [
+      { name: 'Arial', value: 'Arial, sans-serif' },
+      { name: 'Verdana', value: 'Verdana, sans-serif' },
+      { name: 'Helvetica', value: 'Helvetica, sans-serif' },
+      { name: 'Times New Roman', value: 'Times New Roman, serif' },
+      { name: 'Courier New', value: 'Courier New, monospace' }
+    ];
   }
 
   ngOnInit(): void {
@@ -35,11 +44,10 @@ export class ConfigComponent implements OnInit {
       description: [
         this.configuration.description,
         Validators.compose([
-          Validators.maxLength(200)
+          Validators.maxLength(300)
         ]),
       ],
     });
-
   }
 
   setTextAlign(textAlign: Align) {
@@ -109,7 +117,18 @@ export class ConfigComponent implements OnInit {
     }
   }
 
+  addCategory() {
+    this.configuration.categories.push(new Category("Nombre categoría", null, null));
+  }
+
   closeMessage() {
     this.message = "";
+  }
+
+  deleteCategory(category: Category) {
+    const index = this.configuration.categories.indexOf(category);
+    if (index !== -1) {
+      this.configuration.categories.splice(index, 1);
+    }
   }
 }
