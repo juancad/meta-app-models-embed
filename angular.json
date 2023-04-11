@@ -24,7 +24,10 @@
               "zone.js"
             ],
             "allowedCommonJsDependencies": [
-              "lodash"
+              "lodash",
+              "long",
+              "file-saver",
+              "jszip"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -47,7 +50,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1mb",
+                  "maximumWarning": "2mb",
                   "maximumError": "3mb"
                 },
                 {

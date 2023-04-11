@@ -112,24 +112,26 @@ export class PreviewComponent implements OnInit {
 
   predecir() {
     if (this.modelo != null) {
-      // obtiene los datos de la imagen de la cámara
-      let imageData = this.ctx.getImageData(0, 0, this.width, this.height);
-      let imageTensor = tf.browser.fromPixels(imageData).toFloat();
+      //el método tidy() de TensorFlow.js libera la memoria automáticamente después de ejecutar una serie de operaciones
+      tf.tidy(() => {
+        let imageData = this.ctx.getImageData(0, 0, this.width, this.height);
+        let imageTensor = tf.browser.fromPixels(imageData).toFloat();
 
-      // redimensiona la imagen al tamaño requerido por el tensor
-      let resizedTensor = tf.image.resizeBilinear(imageTensor, [this.configuration.height, this.configuration.width]);
+        // redimensiona la imagen al tamaño requerido por el tensor
+        let resizedTensor = tf.image.resizeBilinear(imageTensor, [this.configuration.height, this.configuration.width]);
 
-      // convertir la imagen a escala de grises
-      let grayTensor = resizedTensor.mean(2, true);
+        // convertir la imagen a escala de grises
+        let grayTensor = resizedTensor.mean(2, true);
 
-      // normaliza los valores de los píxeles
-      let normalizedTensor = grayTensor.div(255);
+        // normaliza los valores de los píxeles
+        let normalizedTensor = grayTensor.div(255);
 
-      let tensor = normalizedTensor.reshape([1, this.configuration.width, this.configuration.height, 1]);
-      this.output = this.modelo.predict(tensor).dataSync();
+        let tensor = normalizedTensor.reshape([1, this.configuration.width, this.configuration.height, 1]);
+        this.output = this.modelo.predict(tensor).dataSync();
 
-      //const indice = tf.argMax(this.output).dataSync()[0];
-      //console.log(indice);
+        //const indice = tf.argMax(this.output).dataSync()[0];
+        //console.log(indice);
+      });
 
       for (const element of this.configuration.categories) {
         if (this.output >= element.minValue && this.output < element.maxValue) {

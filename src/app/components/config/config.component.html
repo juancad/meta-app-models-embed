@@ -99,19 +99,19 @@
                     </div>
                     <br />
                     <div class="row g-3">
-                        <div class="input-group input-group-sm col-md">
+                        <div class="input-group input-group-sm col-sm">
                             <span class="input-group-text">Color de fondo:</span>
                             <input readonly class="colorPicker" [value]="configuration.style.backgroundColor"
                                 [style.background]="configuration.style.backgroundColor" [cpPosition]="'top'"
                                 [(colorPicker)]="configuration.style.backgroundColor" />
                         </div>
-                        <div class="input-group input-group-sm col-md">
+                        <div class="input-group input-group-sm col-sm">
                             <span class="input-group-text">Color de los títulos:</span>
                             <input readonly class="colorPicker" [value]="configuration.style.titleColor"
                                 [style.background]="configuration.style.titleColor" [cpPosition]="'top'"
                                 [(colorPicker)]="configuration.style.titleColor" />
                         </div>
-                        <div class="input-group input-group-sm col-md">
+                        <div class="input-group input-group-sm col-sm">
                             <span class="input-group-text">Color del contenido:</span>
                             <input readonly class="colorPicker" [value]="configuration.style.contentColor"
                                 [style.background]="configuration.style.contentColor" [cpPosition]="'top'"
@@ -127,11 +127,11 @@
                     <ul class="list-group">
                         <li class="list-group-item" *ngFor="let categorie of configuration.categories; index as i;">
                             <div class="row g-3">
-                                <div class="input-group col-sm">
+                                <div class="input-group input-group-sm col-sm">
                                     <span class="input-group-text">Nombre de la categoría {{i}}:</span>
                                     <input [(ngModel)]="categorie.name" type="text" class="form-control">
                                 </div>
-                                <div class="input-group col-sm">
+                                <div class="input-group input-group-sm col-sm">
                                     <span class="input-group-text">Rango de valores:</span>
                                     <span class="input-group-text">&#62;</span>
                                     <input [(ngModel)]="categorie.minValue" type=number step="0.1" class="form-control">

@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Configuration } from 'src/app/models/configuration.model';
 import { Align } from 'src/app/models/style.model';
 import { AppsService } from 'src/app/services/apps.service';
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Category } from 'src/app/models/category.model';
 
@@ -95,7 +95,7 @@ export class ConfigComponent implements OnInit {
     const html = "<div id='main'>\n<h1>" + this.configuration.title + "</h1>\n<p>" + this.configuration.description + "</p>\n</div>\n";
     const css = "body {background-color:" + this.configuration.style.backgroundColor + "; color: " + this.configuration.style.contentColor + "}\nh1 {color: " + this.configuration.style.titleColor + "}";
     const js = '';
-    const zip = new JSZip();
+    var zip = new JSZip();
 
     zip.file("index.html", html);
     zip.file("style.css", css);
