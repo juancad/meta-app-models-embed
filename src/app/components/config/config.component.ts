@@ -77,8 +77,8 @@ export class ConfigComponent implements OnInit {
     let model;
 
     //filtro de archivos
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+    for (const element of files) {
+      const file = element
       const extension = file.name.split(".").pop();
 
       if (extension == "json") {
@@ -92,13 +92,31 @@ export class ConfigComponent implements OnInit {
   }
 
   download() {
-    const html = "<div id='main'>\n<h1>" + this.configuration.title + "</h1>\n<p>" + this.configuration.description + "</p>\n</div>\n";
-    const css = "body {background-color:" + this.configuration.style.backgroundColor + "; color: " + this.configuration.style.contentColor + "}\nh1 {color: " + this.configuration.style.titleColor + "}";
-    const js = '';
+    const html = "<!DOCTYPE html>\n" +
+      "<html>\n" +
+      "\t<head>\n" +
+      "\t\t<link rel=\"stylesheet\" href=\"styles.css\">\n" +
+      "\t</head>\n\n" +
+      "\t<body>\n" +
+      "\t\t<h1>" + this.configuration.title + "</h1>\n" +
+      "\t\t<p>" + this.configuration.description + "</p>\n" +
+      "\t\t<script src=\"script.js\"></script>\n" +
+      "\t</body>\n" +
+      "</html>";
+    const css = "body {\n" +
+      "\tbackground-color: " + this.configuration.style.backgroundColor + ";\n" +
+      "\tcolor: " + this.configuration.style.contentColor + ";\n" +
+      "\tfont-family: " + this.configuration.style.contentFontFamily + ";\n" +
+      "}\n\n" +
+      "h1 {\n" +
+      "\tcolor: " + this.configuration.style.titleColor + ";\n" +
+      "\tfont-family: " + this.configuration.style.titleFontFamily + ";\n" +
+      "}";
+    const js = "";
     var zip = new JSZip();
 
     zip.file("index.html", html);
-    zip.file("style.css", css);
+    zip.file("styles.css", css);
     zip.file("script.js", js);
 
     zip.generateAsync({ type: "blob" }).then(function (content) {

@@ -18,7 +18,7 @@ export class AppsService {
     categories.push(new Category("Perro", 0.5, Number.MAX_SAFE_INTEGER));
 
     this.configs = [
-      new Configuration("Perros y gatos", "", "./assets/perros-gatos/model.json", 100, 100, style, categories),
+      new Configuration("Perros y gatos", "", "./assets/perros-gatos/model.json", style, categories, true),
     ]
   }
 

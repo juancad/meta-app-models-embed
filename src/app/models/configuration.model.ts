@@ -5,18 +5,16 @@ export class Configuration {
     title: string;
     description: string;
     modelURL: string;
-    width: number;
-    height: number;
     style: Style;
     categories: Array<Category>;
+    useRange: boolean;
 
-    constructor(title: string, description: string, modelURL: string, width: number, height: number, style: Style, categories: Array<Category>) {
+    constructor(title: string, description: string, modelURL: string, style: Style, categories: Array<Category>, useRange: boolean) {
         this.title = title;
         this.description = description;
         this.modelURL = modelURL;
-        this.width = width;
-        this.height = height;
         this.style = style;
         this.categories = categories;
+        this.useRange = useRange;
     }
 }

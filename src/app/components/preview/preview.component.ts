@@ -125,7 +125,7 @@ export class PreviewComponent implements OnInit {
         // redimensiona la imagen al tamaño requerido por el tensor
         imageTensor = tf.image.resizeBilinear(imageTensor, [this.inputShape[this.inputShape.length - 3], this.inputShape[this.inputShape.length - 2]]);
         // convertir la imagen a escala de grises si el modelo utiliza sólo 1 canal de color
-        if(this.inputShape.length == 4 && this.inputShape[this.inputShape.length-1] == 1) {
+        if (this.inputShape.length == 4 && this.inputShape[this.inputShape.length - 1] == 1) {
           imageTensor = imageTensor.mean(2, true);
         }
         // normaliza los valores de los píxeles
@@ -133,15 +133,20 @@ export class PreviewComponent implements OnInit {
 
         let tensor = imageTensor.reshape([1, this.inputShape[this.inputShape.length - 3], this.inputShape[this.inputShape.length - 2], this.inputShape[this.inputShape.length - 1]]);
         this.output = this.model.predict(tensor).dataSync();
-
-        //const indice = tf.argMax(this.output).dataSync()[0];
-        //console.log(indice);
       });
 
-      for (const element of this.configuration.categories) {
-        if (this.output >= element.minValue && this.output < element.maxValue) {
-          this.category = element.name;
+      //si el modelo utiliza el rango, se mostrará la categoría dependiendo del rango
+      if (this.configuration.useRange) {
+        for (const categorie of this.configuration.categories) {
+          if (this.output > categorie.minValue && this.output <= categorie.maxValue) {
+            this.category = categorie.name;
+          }
         }
+      }
+      //si el modelo no utiliza el rango, se mostrará la categoría dependiendo del índice
+      else {
+        const index = tf.argMax(this.output).dataSync()[0];
+        this.category = this.configuration.categories[index].name;
       }
     }
 
