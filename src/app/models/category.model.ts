@@ -1,11 +1,11 @@
 export class Category {
     name: string;
-    minValue: number;
-    maxValue: number;
+    minVal: number;
+    maxVal: number;
 
-    constructor(name: string, minValue: number, maxValue: number) {
+    constructor(name: string, minVal: number, maxVal: number) {
         this.name = name;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
+        this.minVal = minVal;
+        this.maxVal = maxVal;
     }
 }

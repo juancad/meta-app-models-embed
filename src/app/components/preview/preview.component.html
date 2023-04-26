@@ -1,17 +1,18 @@
 <div style="padding: 10px;"
     [ngStyle]="{'text-align': getTextAlign(), 'background-color': configuration.style.backgroundColor, 'color': configuration.style.contentColor, 'font-family': configuration.style.contentFontFamily}">
-    <h1 [ngStyle]="{'color': configuration.style.titleColor, 'font-family': configuration.style.titleFontFamily}">
+    <h1
+        [ngStyle]="{'text-align': getTitleAlign(), 'color': configuration.style.titleColor, 'font-family': configuration.style.titleFontFamily}">
         {{configuration.title}}
     </h1>
-    <p>{{configuration.description}}</p>
+    <p style="white-space: pre-wrap;">{{configuration.description}}</p>
     <div [ngStyle]="{'text-align': getCamAlign()}">
-        <video id="video" autoplay loop muted playsinline hidden></video>
+        <video id="video" [width]="camWidth" [height]="camHeight" autoplay loop muted playsinline hidden></video>
         <canvas id="canvas" [width]="camWidth" [height]="camHeight" style="max-width: 100%;"></canvas>
         <button id="cambiarCamara" class="btn btn-light" aria-label="Rotar cámara" (click)=cambiarCamara()><i
                 class="bi bi-arrow-repeat"></i></button>
     </div>
-    <h2 color="primary"
-        [ngStyle]="{'color': configuration.style.titleColor, 'font-family': configuration.style.titleFontFamily}">
+    <h2
+        [ngStyle]="{'text-align': getTitleAlign(), 'color': configuration.style.titleColor, 'font-family': configuration.style.titleFontFamily}">
         Resultado: {{category}}</h2>
-    {{output}}
+    <p [ngStyle]="{'text-align': getTitleAlign(), 'color': configuration.style.titleColor, 'font-family': configuration.style.titleFontFamily}">{{output}}</p>
 </div>

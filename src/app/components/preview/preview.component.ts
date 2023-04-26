@@ -1,7 +1,8 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import { Configuration } from 'src/app/models/configuration.model';
 import { Align } from 'src/app/models/style.model';
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'app-preview',
@@ -22,12 +23,12 @@ export class PreviewComponent implements OnInit {
   output: number;
   inputShape: any;
 
-  constructor() {
-    this.camWidth = 400;
-    this.camHeight = 400;
+  constructor(private router: Router) {
+    this.camWidth = 420;
+    this.camHeight = 420;
     this.model = null;
     this.facingMode = "user";
-    this.category = "Cargando...";
+    this.category = "";
     this.output = 0;
   }
 
@@ -35,22 +36,31 @@ export class PreviewComponent implements OnInit {
     this.video = <HTMLVideoElement>document.getElementById("video");
     this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
-    this.loadModel();
   }
 
-  async loadModel() {
+  /**
+   * Carga el modelo de la aplicación.
+   * Cada vez que cambie los valores del @input se ejecuta el método ngOnChanges
+   */
+  async ngOnChanges() {
     console.log("Cargando modelo...");
-    this.model = await tf.loadLayersModel(this.configuration.modelURL);
-    //guardo información del tensor del modelo
-    //el tensor de 4D será de la forma: [batchSize, height, width, channels], en el caso de 3D [height, width, channels]
-    this.inputShape = this.model.inputs[0].shape;
-    console.log(this.inputShape);
-    console.log("Modelo cargado.");
-  }
+    this.category = "Cargando...";
+    const url = "http://localhost/meta-app-models/assets/" + this.configuration.id + "/model/model.json";
 
-  @HostListener('window:load')
-  onLoad() {
-    this.mostrarCamara();
+    tf.loadLayersModel(url)
+      .then((model) => {
+        this.model = model;
+        this.inputShape = this.model.inputs[0].shape;
+        console.log("Modelo cargado. inputShape:" + this.inputShape);
+        console.log(model.summary());
+        this.mostrarCamara();
+      })
+      .catch((error) => {
+        this.model = null;
+        this.output = 0;
+        this.category = "No se ha podido cargar el modelo correctamente.";
+        console.log(error);
+      });
   }
 
   mostrarCamara() {
@@ -117,7 +127,7 @@ export class PreviewComponent implements OnInit {
 
   predecir() {
     if (this.model != null) {
-      //el método tidy() de TensorFlow.js libera la memoria automáticamente después de ejecutar una serie de operaciones
+      //el método tidy() libera la memoria automáticamente después de ejecutar una serie de operaciones
       tf.tidy(() => {
         let imageData = this.ctx.getImageData(0, 0, this.camWidth, this.camHeight);
         let imageTensor = tf.browser.fromPixels(imageData).toFloat();
@@ -138,7 +148,7 @@ export class PreviewComponent implements OnInit {
       //si el modelo utiliza el rango, se mostrará la categoría dependiendo del rango
       if (this.configuration.useRange) {
         for (const categorie of this.configuration.categories) {
-          if (this.output > categorie.minValue && this.output <= categorie.maxValue) {
+          if (this.output > categorie.minVal && this.output <= categorie.maxVal) {
             this.category = categorie.name;
           }
         }
@@ -155,6 +165,10 @@ export class PreviewComponent implements OnInit {
 
   getTextAlign(): string {
     return Align[this.configuration.style.textAlign];
+  }
+
+  getTitleAlign(): string {
+    return Align[this.configuration.style.titleAlign];
   }
 
   getCamAlign(): string {

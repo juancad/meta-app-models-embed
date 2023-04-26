@@ -4,7 +4,7 @@
 
     <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasBottomLabel">Configuración de la vista de la aplicación</h5>
+            <h5 class="offcanvas-title" id="offcanvasBottomLabel"><i class="bi bi-gear"></i> Configuración de la vista de la aplicación</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body small">
@@ -17,8 +17,16 @@
                         correspondientes.</label>
                 </div>
                 <br />
+                <div *ngIf="formMessage!=''" class="alert alert-danger" role="alert">{{formMessage}}</div>
                 <div class="row g-2">
                     <div class="col-md">
+                        Anterior id: {{configuration.id}}<br/>
+                        <div class="input-group id">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Id de la aplicación</span>
+                            <input #id (ngModelChange)="setId(id.value)" type="text" formControlName="id"
+                                class="form-control" placeholder="Id. de la aplicación"
+                                [ngClass]="{'is-invalid': form.controls['id'].errors}">
+                        </div>
                         <div class="input-group">
                             <span class="input-group-text" id="inputGroup-sizing-default">Título de la aplicación</span>
                             <input #title (ngModelChange)="setTitle(title.value)" type="text" formControlName="title"
@@ -27,7 +35,7 @@
                         </div>
                     </div>
                     <div class="col-md">
-                        <div class="input-group">
+                        <div class="input-group desc">
                             <span class="input-group-text">Descripción</span>
                             <textarea #description (ngModelChange)="setDescription(description.value)"
                                 class="form-control" type="text" formControlName="description"
@@ -36,11 +44,47 @@
                         </div>
                     </div>
                 </div>
-            </form><br />
+            </form><br /><br />
+            <div class="card">
+                <div class="card-header">Categorías:</div>
+                <br />
+                <div class="form-check form-switch py-1 mx-4">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                        [(ngModel)]="configuration.useRange">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Utilizar rango de valores</label>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item" *ngFor="let categorie of configuration.categories; index as i;">
+                            <div class="row g-3">
+                                <div class="input-group input-group-sm col">
+                                    <span class="input-group-text" maxlength="100">Nombre de la categoría {{i}}:</span>
+                                    <input [(ngModel)]="categorie.name" type="text" class="form-control">
+                                </div>
+                                <div *ngIf="configuration.useRange" class="input-group input-group-sm col">
+                                    <span class="input-group-text">Rango de valores:</span>
+                                    <span class="input-group-text">&#62;</span>
+                                    <input [(ngModel)]="categorie.minVal" type=number step="0.1" class="form-control">
+                                    <span class="input-group-text">&lt;&#61;</span>
+                                    <input [(ngModel)]="categorie.maxVal" type=number step="0.1" class="form-control">
+                                </div>
+                                <div class="col-1">
+                                    <button (click)="deleteCategory(categorie)" class="btn btn-danger btn-sm"><i
+                                            class="bi bi-trash3-fill"></i></button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <br />
+                    <button (click)="addCategory()" type="button" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle"></i> Añadir nueva
+                        categoría</button>
+                </div>
+            </div>
+            <br /><br />
             <div class="card">
                 <div class="card-header">Estilo</div>
                 <div class="card-body">
-                    <div class="row g-2">
+                    <div class="row g-3">
                         <div class="col-md">
                             <label>Selecciona la alineación de la cámara:&nbsp;&nbsp;</label>
                             <div class="btn-group btn-group-toggle">
@@ -56,6 +100,23 @@
                                 <button class="btn btn-secondary"
                                     [class.active]="configuration.style.camAlign === Align.justify"
                                     (click)="setCamAlign(Align.justify)"><i class="bi bi-justify"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <label>Selecciona la alineación de los títulos:&nbsp;&nbsp;</label>
+                            <div class="btn-group btn-group-toggle">
+                                <button class="btn btn-secondary"
+                                    [class.active]="configuration.style.titleAlign === Align.left"
+                                    (click)="setTitleAlign(Align.left)"><i class="bi bi-text-left"></i></button>
+                                <button class="btn btn-secondary"
+                                    [class.active]="configuration.style.titleAlign === Align.center"
+                                    (click)="setTitleAlign(Align.center)"><i class="bi bi-text-center"></i></button>
+                                <button class="btn btn-secondary"
+                                    [class.active]="configuration.style.titleAlign === Align.right"
+                                    (click)="setTitleAlign(Align.right)"><i class="bi bi-text-right"></i></button>
+                                <button class="btn btn-secondary"
+                                    [class.active]="configuration.style.titleAlign === Align.justify"
+                                    (click)="setTitleAlign(Align.justify)"><i class="bi bi-justify"></i></button>
                             </div>
                         </div>
                         <div class="col-md">
@@ -101,74 +162,41 @@
                     <div class="row g-3">
                         <div class="input-group input-group-sm col-sm">
                             <span class="input-group-text">Color de fondo:</span>
-                            <input readonly class="colorPicker" [value]="configuration.style.backgroundColor"
+                            <input readonly class="colorPicker" [cpToggle]="false"
+                                [value]="configuration.style.backgroundColor"
                                 [style.background]="configuration.style.backgroundColor" [cpPosition]="'top'"
                                 [(colorPicker)]="configuration.style.backgroundColor" />
                         </div>
                         <div class="input-group input-group-sm col-sm">
                             <span class="input-group-text">Color de los títulos:</span>
-                            <input readonly class="colorPicker" [value]="configuration.style.titleColor"
+                            <input readonly class="colorPicker" [cpToggle]="false"
+                                [value]="configuration.style.titleColor"
                                 [style.background]="configuration.style.titleColor" [cpPosition]="'top'"
                                 [(colorPicker)]="configuration.style.titleColor" />
                         </div>
                         <div class="input-group input-group-sm col-sm">
-                            <span class="input-group-text">Color del contenido:</span>
-                            <input readonly class="colorPicker" [value]="configuration.style.contentColor"
+                            <span class="input-group-text">Color del texto:</span>
+                            <input readonly class="colorPicker" [cpToggle]="false"
+                                [value]="configuration.style.contentColor"
                                 [style.background]="configuration.style.contentColor" [cpPosition]="'top'"
                                 [(colorPicker)]="configuration.style.contentColor" />
                         </div>
                     </div>
                 </div>
             </div>
-            <br /><br />
-            <div class="card">
-                <div class="card-header">Categorías:</div>
-                <br />
-                <div class="form-check form-switch py-1 mx-4">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
-                        [(ngModel)]="configuration.useRange">
-                    <label class="form-check-label" for="flexSwitchCheckDefault">Utilizar rango de valores</label>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item" *ngFor="let categorie of configuration.categories; index as i;">
-                            <div class="row g-3">
-                                <div class="input-group input-group-sm col">
-                                    <span class="input-group-text">Nombre de la categoría {{i}}:</span>
-                                    <input [(ngModel)]="categorie.name" type="text" class="form-control">
-                                </div>
-                                <div *ngIf="configuration.useRange" class="input-group input-group-sm col">
-                                    <span class="input-group-text">Rango de valores:</span>
-                                    <span class="input-group-text">&#62;</span>
-                                    <input [(ngModel)]="categorie.minValue" type=number step="0.1" class="form-control">
-                                    <span class="input-group-text">&lt;&#61;</span>
-                                    <input [(ngModel)]="categorie.maxValue" type=number step="0.1" class="form-control">
-                                </div>
-                                <div class="col-1">
-                                    <button (click)="deleteCategory(categorie)" class="btn btn-danger btn-sm"><i
-                                            class="bi bi-trash3-fill"></i></button>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <br />
-                    <button (click)="addCategory()" type="button" class="btn btn-primary btn-sm">Añadir nueva
-                        categoría</button>
-                </div>
-            </div>
             <br />
         </div>
     </div>
+    
     <div class="buttons">
         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom"
             aria-controls="offcanvasBottom">Configuración de la vista</button>
-        <button type="button" id="downloadBtn" class="btn btn-secondary" (click)="download()">Descargar app
-            actual</button>
-        <button type="button" class="btn btn-warning" (click)="addConfig()">Añadir a la lista</button>
+        <button type="button" class="btn btn-secondary" (click)="updateConfig()">Guardar cambios</button>
+        <button type="buttn" class="btn btn-warning" (click)="addConfig()">Añadir app la lista</button>
     </div>
 
-    <div *ngIf="message!=''" class="alert"
-        [ngClass]="{'alert-danger': success === false, 'alert-success': success === true}" role="alert">{{message}}
+    <div *ngIf="infoMessage!=''" class="alert"
+        [ngClass]="{'alert-danger': success === false, 'alert-success': success === true}" role="alert">{{infoMessage}}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close" (click)="closeMessage()">
             <span>&times;</span>
         </button>

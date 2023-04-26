@@ -2,17 +2,17 @@ import { Category } from "./category.model";
 import { Style } from "./style.model";
 
 export class Configuration {
+    id: string;
     title: string;
     description: string;
-    modelURL: string;
     style: Style;
     categories: Array<Category>;
     useRange: boolean;
 
-    constructor(title: string, description: string, modelURL: string, style: Style, categories: Array<Category>, useRange: boolean) {
+    constructor(id: string, title: string, description: string, style: Style, categories: Array<Category>, useRange: boolean) {
+        this.id = id;
         this.title = title;
         this.description = description;
-        this.modelURL = modelURL;
         this.style = style;
         this.categories = categories;
         this.useRange = useRange;

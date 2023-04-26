@@ -37,6 +37,11 @@ div.alert {
     margin-bottom: 0px;
 }
 
+form .alert {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .alert button.close {
     color: inherit;
     background-color: transparent;
@@ -72,4 +77,13 @@ input.colorPicker {
 
 .form-check.form-switch {
     font-size: 1rem;
+}
+
+.id {
+    max-width: 400px;
+    margin-bottom: 5px;
+}
+
+.desc textarea {
+    min-height: 102px;
 }

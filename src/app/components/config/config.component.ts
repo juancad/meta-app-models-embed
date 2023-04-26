@@ -1,26 +1,25 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Configuration } from 'src/app/models/configuration.model';
 import { Align } from 'src/app/models/style.model';
-import { AppsService } from 'src/app/services/apps.service';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { Category } from 'src/app/models/category.model';
+import { AppsService } from 'src/app/services/apps.service';
 
 @Component({
   selector: 'app-config',
   templateUrl: './config.component.html',
   styleUrls: ['./config.component.scss']
 })
-export class ConfigComponent implements OnInit {
-  @ViewChild('description') description: any;
-  @ViewChild('title') title: any;
+export class ConfigComponent {
   @Input() configuration: Configuration;
+  @Output() readConfigEvent: EventEmitter<any>;
   Align = Align;
   form: FormGroup;
-  message: string = "";
-  success: boolean = true;
+  infoMessage: string;
+  formMessage: string;
+  success: boolean;
   fontList: { name: string; value: string; }[];
+  newId: string;
 
   constructor(private fb: FormBuilder, private appsService: AppsService) {
     this.fontList = [
@@ -30,21 +29,35 @@ export class ConfigComponent implements OnInit {
       { name: 'Times New Roman', value: 'Times New Roman, serif' },
       { name: 'Courier New', value: 'Courier New, monospace' }
     ];
+    this.formMessage = "";
+    this.infoMessage = "";
+    this.success = false;
+    this.readConfigEvent = new EventEmitter<any>();
   }
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
+    this.newId = this.configuration.id;
+
     this.form = this.fb.group({
+      id: [
+        this.newId,
+        Validators.compose([
+          Validators.required,
+          Validators.maxLength(20),
+          Validators.pattern(/^[a-zA-Z0-9ñÑ._-]+$/)
+        ]),
+      ],
       title: [
         this.configuration.title,
         Validators.compose([
           Validators.required,
-          Validators.maxLength(30),
+          Validators.maxLength(255)
         ]),
       ],
       description: [
         this.configuration.description,
         Validators.compose([
-          Validators.maxLength(300)
+          Validators.maxLength(2000)
         ]),
       ],
     });
@@ -54,19 +67,126 @@ export class ConfigComponent implements OnInit {
     this.configuration.style.textAlign = textAlign;
   }
 
+  setTitleAlign(titleAlign: Align) {
+    this.configuration.style.titleAlign = titleAlign;
+  }
+
   setCamAlign(camAlign: Align) {
     this.configuration.style.camAlign = camAlign;
   }
 
+  setId(id: string) {
+    if (!this.form.controls['id'].errors) {
+      this.formMessage = "";
+      this.newId = id;
+    }
+    else {
+      console.log(this.form.controls['id'].errors);
+      if (this.form.controls['id'].errors['required']) {
+        this.formMessage = "El identificador no puede estar vacío.";
+      }
+      if (this.form.controls['id'].errors['pattern']) {
+        this.formMessage = "El identificador contiene caracteres no válidos. Solo puede contener caracteres alfanuméricos, puntos, guiones y/o guiones bajos.";
+      }
+      if (this.form.controls['id'].errors['maxlength']) {
+        this.formMessage = "El identificdor no puede contener más de 20 caracteres.";
+      }
+    }
+  }
+
   setTitle(title: string) {
     if (!this.form.controls['title'].errors) {
+      this.formMessage = "";
       this.configuration.title = title;
+    }
+    else {
+      if (this.form.controls['title'].errors['required']) {
+        this.formMessage = "El título de la aplicación no puede estar vacío.";
+      }
+      if (this.form.controls['title'].errors['maxlength']) {
+        this.formMessage = "El título de la aplicación no puede contener más de 255 caracteres.";
+      }
     }
   }
 
   setDescription(description: string) {
     if (!this.form.controls['description'].errors) {
+      this.formMessage = "";
       this.configuration.description = description;
+    }
+    else {
+      if (this.form.controls['description'].errors['maxlength']) {
+        this.formMessage = "La descripción de la aplicación no puede contener más de 2000 caracteres.";
+      }
+    }
+  }
+
+  addConfig() {
+    this.success = false;
+    if (this.form.valid) {
+      this.configuration.id = this.newId;
+      this.appsService.post(this.configuration).subscribe(
+        res => {
+          this.appsService.createFolder(this.configuration).subscribe(
+            res => {
+              //actualiza la lista de aplicaciones
+              this.readConfigEvent.emit();
+              this.success = true;
+              this.infoMessage = "Se ha añadido correctamente la aplicación a la lista.";
+              console.log(res);
+            },
+            err => {
+              console.log(err);
+            }
+          )
+          console.log(res);
+        },
+        err => {
+          this.infoMessage = "No se ha podido añadir correctamente a la lista. El id de la aplicación ya existe, escribe un id único.";
+          console.log(err);
+        }
+      )
+    }
+    else {
+      this.infoMessage = "No se ha podido añadir la aplicación a la lista. Por favor, revisa los campos del formulario.";
+    }
+  }
+
+  updateConfig() {
+    this.success = false;
+
+    if (this.form.valid) {
+      this.appsService.put(this.configuration, this.newId).subscribe(
+        res => {
+          //actualiza la lista de aplicaciones
+          this.readConfigEvent.emit();
+          this.success = true;
+          this.infoMessage = "Se han guardado los cambios de la aplicación correctamente.";
+          console.log(res);
+        },
+        err => {
+          this.infoMessage = "No se han podido actualizar los datos correctamente.";
+          console.log(err);
+        }
+      )
+    }
+    else {
+      this.infoMessage = "No se han podido guardar los cambios de la aplicación correctamente. Por favor, revisa los campos del formulario.";
+    }
+  }
+
+  addCategory() {
+    this.configuration.categories.push(new Category("Nombre categoría", null, null));
+  }
+
+  closeMessage() {
+    this.infoMessage = "";
+  }
+
+  deleteCategory(category: Category) {
+    const index = this.configuration.categories.indexOf(category);
+    if (index !== -1) {
+      this.configuration.categories.splice(index, 1);
     }
   }
 
@@ -88,65 +208,6 @@ export class ConfigComponent implements OnInit {
         bins.push(file);
       }
     }
-    this.configuration.modelURL = model.webkitRelativePath;
-  }
-
-  download() {
-    const html = "<!DOCTYPE html>\n" +
-      "<html>\n" +
-      "\t<head>\n" +
-      "\t\t<link rel=\"stylesheet\" href=\"styles.css\">\n" +
-      "\t</head>\n\n" +
-      "\t<body>\n" +
-      "\t\t<h1>" + this.configuration.title + "</h1>\n" +
-      "\t\t<p>" + this.configuration.description + "</p>\n" +
-      "\t\t<script src=\"script.js\"></script>\n" +
-      "\t</body>\n" +
-      "</html>";
-    const css = "body {\n" +
-      "\tbackground-color: " + this.configuration.style.backgroundColor + ";\n" +
-      "\tcolor: " + this.configuration.style.contentColor + ";\n" +
-      "\tfont-family: " + this.configuration.style.contentFontFamily + ";\n" +
-      "}\n\n" +
-      "h1 {\n" +
-      "\tcolor: " + this.configuration.style.titleColor + ";\n" +
-      "\tfont-family: " + this.configuration.style.titleFontFamily + ";\n" +
-      "}";
-    const js = "";
-    var zip = new JSZip();
-
-    zip.file("index.html", html);
-    zip.file("styles.css", css);
-    zip.file("script.js", js);
-
-    zip.generateAsync({ type: "blob" }).then(function (content) {
-      saveAs(content, "app.zip");
-    });
-  }
-
-  addConfig() {
-    if (this.appsService.addConfig(this.configuration)) {
-      this.message = "Se ha añadido correctamente la aplicación actual a la lista.";
-      this.success = true;
-    }
-    else {
-      this.message = "La configuración actual no puede añadirse a la lista, ya existe otra configuración con el mismo título.";
-      this.success = false;
-    }
-  }
-
-  addCategory() {
-    this.configuration.categories.push(new Category("Nombre categoría", null, null));
-  }
-
-  closeMessage() {
-    this.message = "";
-  }
-
-  deleteCategory(category: Category) {
-    const index = this.configuration.categories.indexOf(category);
-    if (index !== -1) {
-      this.configuration.categories.splice(index, 1);
-    }
+    //this.configuration.modelURL = model.webkitRelativePath;
   }
 }

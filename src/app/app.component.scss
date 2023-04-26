@@ -7,7 +7,7 @@
 }
 
 div#offcanvasRight {
-    width: 250px;
+    width: 350px;
 }
 
 .navbar-brand {
@@ -16,4 +16,9 @@ div#offcanvasRight {
 
 nav i.bi.bi-boxes {
     margin-right: 5px;
+}
+
+.list-group button {
+    float: right;
+    margin-left: 5px;
 }

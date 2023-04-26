@@ -11,7 +11,9 @@
     </button>
 </nav>
 
-<app-config [configuration]="selectedConfig"></app-config>
+<ng-container *ngIf="configLoaded">
+    <app-config (readConfigEvent)="readConfig()" [configuration]="selectedConfig"></app-config>
+</ng-container>
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
     <div class="offcanvas-header">
@@ -20,8 +22,11 @@
     </div>
     <div class="offcanvas-body">
         <div class="list-group">
-            <a *ngFor="let config of configurations" [class.active]="config.title === getSelected().title" (click)="onSelect(config)" class="list-group-item list-group-item-action">
-                {{config.title}}
+            <a *ngFor="let config of configurations.reverse()" [class.active]="config.id === getSelected().id"
+                (click)="setSelected(config)" class="list-group-item list-group-item-action">{{config.id}} 
+                <button type="button" (click)="delete(config.id)" onclick="event.stopPropagation()" class="btn btn-light btn-sm text-danger"><i class="bi bi-trash-fill"></i></button>
+                <button type="button" (click)="view(config.id)" class="btn btn-light btn-sm" onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
+                <button type="button" (click)="download(config.id)" class="btn btn-light btn-sm" onclick="event.stopPropagation()"><i class="bi bi-download"></i></button>
             </a>
         </div>
     </div>
