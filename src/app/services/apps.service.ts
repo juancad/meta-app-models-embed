@@ -30,40 +30,22 @@ export class AppsService {
     return this.http.delete(this.baseUrl + "/config/delete.php?id=" + id);
   }
 
-
   getFolder(id: string) {
-    const options = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/zip',
-        Accept: 'application/zip',
-        responseType: 'blob',
-      }),
-      observe: 'response' as 'response',
-      responseType: 'blob' as 'json',
-    };
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const options = { headers: headers, responseType: 'blob' as 'json' };
+    const rutaDirectorio = "../assets/" + id;
+    const rutaCodificada = encodeURIComponent(rutaDirectorio);
 
-    return this.http.get(this.baseUrl + "/config/getFolder.php?id=" + id, options);
-  }
-
-  /*
-  download(id: string) {
-    const url = this.baseUrl + "/config/getFolder.php?id=" + id;
-
-    this.http.get<string[]>(url).subscribe(files => {
-      const zip = new JSZip();
-      const folder = zip.folder('app');
-      files.forEach(file => {
-        // agrega cada archivo al objeto de la carpeta
-        folder.file(file, file);
+    this.http.get(this.baseUrl + `/config/download.php?ruta=${rutaCodificada}`, options)
+      .subscribe((response: any) => {
+        const blob = new Blob([response], { type: 'application/zip' });
+        const url = window.URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.download = 'directorio.zip';
+        anchor.href = url;
+        anchor.click();
       });
-      // crea el archivo zip
-      zip.generateAsync({ type: 'blob' }).then(blob => {
-        // descarga el archivo zip en el navegador
-        saveAs(blob, 'app.zip');
-      });
-    });
   }
-  */
 
   view(id: string) {
     window.open(`${this.baseUrl}/assets/${id}/index.html`, "_blank");

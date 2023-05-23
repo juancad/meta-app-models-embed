@@ -98,22 +98,7 @@ export class AppComponent {
   }
 
   download(id: string) {
-    this.appsService.getFolder(id).subscribe((response) => {
-      // Crea una URL del blob de la respuesta para descargar el archivo
-      const bytes = new Uint8Array(response.body as ArrayBuffer);
-
-      const blob = new Blob([bytes], { type: 'application/zip' });
-      const url = window.URL.createObjectURL(blob);
-  
-      // Crea un enlace de descarga y haz clic en él para descargar el archivo
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'app.zip';
-      link.click();
-  
-      // Revoca la URL del blob para liberar memoria
-      window.URL.revokeObjectURL(url);
-    });
+    this.appsService.getFolder(id);
   }
 
   view(id: string) {

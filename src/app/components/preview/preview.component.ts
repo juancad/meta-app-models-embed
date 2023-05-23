@@ -52,7 +52,6 @@ export class PreviewComponent implements OnInit {
         this.model = model;
         this.inputShape = this.model.inputs[0].shape;
         console.log("Modelo cargado. inputShape:" + this.inputShape);
-        console.log(model.summary());
         this.mostrarCamara();
       })
       .catch((error) => {
@@ -92,34 +91,6 @@ export class PreviewComponent implements OnInit {
     }
   }
 
-  cambiarCamara() {
-    if (this.currentStream) {
-      this.currentStream.getTracks().forEach((track: { stop: () => void; }) => {
-        track.stop();
-      });
-    }
-
-    this.facingMode = this.facingMode == "user" ? "environment" : "user";
-
-    let opciones = {
-      audio: false,
-      video: {
-        facingMode: this.facingMode,
-        width: this.camWidth,
-        height: this.camHeight
-      }
-    }
-
-    navigator.mediaDevices.getUserMedia(opciones)
-      .then(stream => {
-        this.currentStream = stream;
-        this.video.srcObject = stream;
-      })
-      .catch(function (err) {
-        console.log("No se ha podido cambiar la cámara.", err);
-      })
-  }
-
   procesarCamara() {
     this.ctx.drawImage(this.video, 0, 0, this.camWidth, this.camHeight, 0, 0, this.camWidth, this.camHeight);
     setTimeout(this.procesarCamara.bind(this), 20);
@@ -127,7 +98,7 @@ export class PreviewComponent implements OnInit {
 
   predecir() {
     if (this.model != null) {
-      //el método tidy() libera la memoria automáticamente después de ejecutar una serie de operaciones
+      //el método tidy() libera la memoria después de ejecutar una serie de operaciones
       tf.tidy(() => {
         let imageData = this.ctx.getImageData(0, 0, this.camWidth, this.camHeight);
         let imageTensor = tf.browser.fromPixels(imageData).toFloat();
@@ -161,6 +132,34 @@ export class PreviewComponent implements OnInit {
     }
 
     setTimeout(this.predecir.bind(this), 100);
+  }
+
+  cambiarCamara() {
+    if (this.currentStream) {
+      this.currentStream.getTracks().forEach((track: { stop: () => void; }) => {
+        track.stop();
+      });
+    }
+
+    this.facingMode = this.facingMode == "user" ? "environment" : "user";
+
+    let opciones = {
+      audio: false,
+      video: {
+        facingMode: this.facingMode,
+        width: this.camWidth,
+        height: this.camHeight
+      }
+    }
+
+    navigator.mediaDevices.getUserMedia(opciones)
+      .then(stream => {
+        this.currentStream = stream;
+        this.video.srcObject = stream;
+      })
+      .catch(function (err) {
+        console.log("No se ha podido cambiar la cámara.", err);
+      })
   }
 
   getTextAlign(): string {
