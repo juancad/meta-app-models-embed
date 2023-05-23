@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Configuration } from '../models/configuration.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { saveAs } from 'file-saver';
-import JSZip from 'jszip';
 
 @Injectable({
   providedIn: 'root'
