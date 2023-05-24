@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Configuration } from '../models/configuration.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AppsService {
     this.baseUrl = "http://localhost/meta-app-models";
   }
 
-  get() {
+  get(): Observable<Configuration[]> {
     return this.http.get<Configuration[]>(this.baseUrl + "/config/get.php");
   }
 
@@ -28,6 +29,10 @@ export class AppsService {
     return this.http.delete(this.baseUrl + "/config/delete.php?id=" + id);
   }
 
+  getById(id: string): Observable<Configuration> {
+    return this.http.get<Configuration>(this.baseUrl + "/config/getById.php?id=" + id);
+  }
+
   getFolder(id: string) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const options = { headers: headers, responseType: 'blob' as 'json' };
@@ -39,7 +44,7 @@ export class AppsService {
         const blob = new Blob([response], { type: 'application/zip' });
         const url = window.URL.createObjectURL(blob);
         const anchor = document.createElement('a');
-        anchor.download = 'directorio.zip';
+        anchor.download = 'app.zip';
         anchor.href = url;
         anchor.click();
       });

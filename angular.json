@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "meta-app-models": {
+    "meta-app-models-embed": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,17 +17,11 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/meta-app-models",
+            "outputPath": "dist/meta-app-models-embed",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
               "zone.js"
-            ],
-            "allowedCommonJsDependencies": [
-              "lodash",
-              "long",
-              "file-saver",
-              "jszip"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -50,8 +44,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "3mb"
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -76,10 +70,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "meta-app-models:build:production"
+              "browserTarget": "meta-app-models-embed:build:production"
             },
             "development": {
-              "browserTarget": "meta-app-models:build:development"
+              "browserTarget": "meta-app-models-embed:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -87,7 +81,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "meta-app-models:build"
+            "browserTarget": "meta-app-models-embed:build"
           }
         },
         "test": {
@@ -118,6 +112,6 @@
     }
   },
   "cli": {
-    "analytics": "825366e2-e111-41b5-898b-947d8d9ed91d"
+    "analytics": "0299b6fe-90cf-429c-ac42-6ff9a43ce728"
   }
 }

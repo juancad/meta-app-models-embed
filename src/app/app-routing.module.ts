@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ConfigComponent } from './components/config/config.component';
 import { HelpComponent } from './components/help/help.component';
+import { EditComponent } from './components/edit/edit.component';
+import { HomeComponent } from './components/home/home.component';
 
 const routes: Routes = [
-  { path: '', component:  ConfigComponent},
-  { path: 'help', component:  HelpComponent}
+  { path: '', component:  HomeComponent},
+  { path: 'edit', component: EditComponent },
+  { path: 'help', component:  HelpComponent},
 ];
 
 @NgModule({

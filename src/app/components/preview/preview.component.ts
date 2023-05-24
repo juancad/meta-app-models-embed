@@ -44,6 +44,7 @@ export class PreviewComponent implements OnInit {
    */
   async ngOnChanges() {
     console.log("Cargando modelo...");
+    console.log(this.configuration.id);
     this.category = "Cargando...";
     const url = "http://localhost/meta-app-models/assets/" + this.configuration.id + "/model/model.json";
 
