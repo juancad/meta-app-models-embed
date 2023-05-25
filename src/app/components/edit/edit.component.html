@@ -6,9 +6,14 @@
         <div class="card-body">
             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
-                        data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
-                        aria-selected="true">Principal</button>
+                    <button class="nav-link active" id="pills-titulo-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-titulo" type="button" role="tab" aria-controls="pills-titulo"
+                        aria-selected="true">Id y título</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-descripcion-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-descripcion" type="button" role="tab" aria-controls="pills-descripcion"
+                        aria-selected="true">Descripción</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pills-categories-tab" data-bs-toggle="pill"
@@ -21,8 +26,40 @@
                 </li>
             </ul>
             <div class="tab-content" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-                    <!--PRINCIPAL-->
+                <div class="tab-pane fade show active" id="pills-titulo" role="tabpanel"
+                    aria-labelledby="pills-titulo-tab">
+                    <!--Título-->
+                    <div *ngIf="formMessage!=''" class="alert alert-danger" role="alert">{{formMessage}}</div>
+                    <form [formGroup]="form">
+                        Anterior id: {{configuration.id}}<br />
+                        <div class="input-group id">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Id de la aplicación</span>
+                            <input #id (ngModelChange)="setId(id.value)" type="text" formControlName="id"
+                                class="form-control" placeholder="Id. de la aplicación"
+                                [ngClass]="{'is-invalid': form.controls['id'].errors}">
+                        </div>
+                        <br />
+                        Escribe a continuación el título de la aplicación:
+                        <br />
+                        <ngx-editor-menu [editor]="editorTitle" [toolbar]="toolbar"
+                            [colorPresets]="colorPresets"></ngx-editor-menu>
+                        <ngx-editor [editor]="editorTitle" (ngModelChange)="setTitle($event)" formControlName="title"
+                            [ngClass]="{'is-invalid': form.controls['title'].errors}"></ngx-editor>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="pills-descripcion" role="tabpanel"
+                    aria-labelledby="pills-descripcion-tab">
+                    <!--Descripcion-->
+                    <div *ngIf="formMessage!=''" class="alert alert-danger" role="alert">{{formMessage}}</div>
+                    <form [formGroup]="form">
+                        Escribe a continuación la descripción de la aplicación:
+                        <br />
+                        <ngx-editor-menu [editor]="editorDesc" [toolbar]="toolbar"
+                            [colorPresets]="colorPresets"></ngx-editor-menu>
+                        <ngx-editor [editor]="editorDesc" (ngModelChange)="setDescription($event)"
+                            formControlName="description"
+                            [ngClass]="{'is-invalid': form.controls['description'].errors}"></ngx-editor>
+                    </form>
                 </div>
                 <div class="tab-pane fade" id="pills-categories" role="tabpanel" aria-labelledby="pills-categories-tab">
                     <!--CATEGORÍAS-->
@@ -61,6 +98,47 @@
                 </div>
                 <div class="tab-pane fade" id="pills-style" role="tabpanel" aria-labelledby="pills-style-tab">
                     <!--ESTILO-->
+                    <div class="form-check form-switch py-1">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                            [(ngModel)]="configuration.style.showOutput">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Mostrar resultado numérico</label>
+                    </div>
+
+                    <label>Selecciona la alineación de la cámara:&nbsp;&nbsp;</label>
+                    <div class="btn-group btn-group-toggle">
+                        <button class="btn btn-secondary" [class.active]="configuration.style.camAlign === Align.left"
+                            (click)="setCamAlign(Align.left)"><i class="bi bi-text-left"></i></button>
+                        <button class="btn btn-secondary" [class.active]="configuration.style.camAlign === Align.center"
+                            (click)="setCamAlign(Align.center)"><i class="bi bi-text-center"></i></button>
+                        <button class="btn btn-secondary" [class.active]="configuration.style.camAlign === Align.right"
+                            (click)="setCamAlign(Align.right)"><i class="bi bi-text-right"></i></button>
+                    </div>
+                    <br /> <br />
+                    <div class="row g-3">
+                        <div class="input-group input-group-sm col-sm font">
+                            <span class="input-group-text">Selecciona la fuente del texto:</span>
+                            <select class="form-select form-select-sm" [(ngModel)]="configuration.style.font">
+                                <option *ngFor="let font of fontList"
+                                    [selected]="font.name === configuration.style.font">{{
+                                    font.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="input-group input-group-sm col-sm bgcolor">
+                            <span class="input-group-text">Selecciona el color de fondo:</span>
+                            <input readonly class="colorPicker" [cpToggle]="false"
+                                [value]="configuration.style.backgroundColor"
+                                [style.background]="configuration.style.backgroundColor" [cpPosition]="'right'"
+                                [(colorPicker)]="configuration.style.backgroundColor" />
+                        </div>
+                        <div class="input-group input-group-sm col-sm color">
+                            <span class="input-group-text">Selecciona el color por defecto del texto:</span>
+                            <input readonly class="colorPicker" [cpToggle]="false"
+                                [value]="configuration.style.textColor"
+                                [style.background]="configuration.style.textColor" [cpPosition]="'right'"
+                                [(colorPicker)]="configuration.style.textColor" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -68,7 +146,7 @@
 
     <div id="preview">
         Vista previa de la aplicación:
-        <app-preview [configuration]="configuration"></app-preview>
+        <app-preview [config]="configuration"></app-preview>
     </div>
 </div>
 <app-footer></app-footer>

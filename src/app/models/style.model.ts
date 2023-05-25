@@ -1,22 +1,16 @@
 export class Style {
-    titleColor: string;
-    contentColor: string;
-    backgroundColor: string;
-    contentFontFamily: string;
-    titleFontFamily: string;
-    titleAlign: Align;
-    textAlign: Align;
     camAlign: Align;
+    font: string;
+    backgroundColor: string;
+    textColor: string;
+    showOutput: boolean;
 
-    constructor(titleColor: string, contentColor: string, backgroundColor: string, contentFontFamily: string, titleFontFamily: string, titlesAlign: Align, textAlign: Align, camAlign: Align) {
-        this.titleColor = titleColor;
-        this.contentColor = contentColor;
-        this.backgroundColor = backgroundColor;
-        this.contentFontFamily = contentFontFamily;
-        this.titleFontFamily = titleFontFamily; 
-        this.titleAlign = titlesAlign;       
-        this.textAlign = textAlign;
+    constructor(camAlign: Align, font: string, backgroundColor: string, textColor: string, showOutput: boolean) {
         this.camAlign = camAlign;
+        this.font = font;
+        this.backgroundColor = backgroundColor;
+        this.textColor = textColor;
+        this.showOutput = showOutput;
     }
 }
 
@@ -24,5 +18,4 @@ export enum Align {
     center,
     right,
     left,
-    justify
   }

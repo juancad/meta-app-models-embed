@@ -62,21 +62,17 @@ export class AppsService {
       "\t\t<link rel=\"stylesheet\" href=\"styles.css\">\n" +
       "\t</head>\n\n" +
       "\t<body>\n" +
-      "\t\t<h1>" + config.title + "</h1>\n" +
-      "\t\t<p>" + config.description + "</p>\n" +
+      "\t\t" + config.title + "\n" +
+      "\t\t" + config.description + "\n" +
       "\t\t<script src=\"script.js\"></script>\n" +
       "\t</body>\n" +
       "</html>";
 
     const cssContent = "body {\n" +
       "\tbackground-color: " + config.style.backgroundColor + ";\n" +
-      "\tcolor: " + config.style.contentColor + ";\n" +
-      "\tfont-family: " + config.style.contentFontFamily + ";\n" +
-      "}\n\n" +
-      "h1 {\n" +
-      "\tcolor: " + config.style.titleColor + ";\n" +
-      "\tfont-family: " + config.style.titleFontFamily + ";\n" +
-      "}";
+      "\tfont-family: " + config.style.font + ";\n" +
+      "\tcolor: " + config.style.textColor + ";\n" +
+      "}\n\n";
 
     const jsContent = "";
 

@@ -1,16 +1,19 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
 import { Configuration } from 'src/app/models/configuration.model';
 import { Align } from 'src/app/models/style.model';
 import { Router } from '@angular/router'
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-preview',
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss']
 })
-export class PreviewComponent implements OnInit {
-  @Input() configuration: Configuration;
+export class PreviewComponent implements OnInit, OnChanges {
+  configuration: Configuration;
+  HTMLTitle: SafeHtml;
+  HTMLDesc: SafeHtml;
   model: any;
   camWidth: number;
   camHeight: number;
@@ -23,7 +26,7 @@ export class PreviewComponent implements OnInit {
   output: number;
   inputShape: any;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private sanitizer: DomSanitizer) {
     this.camWidth = 420;
     this.camHeight = 420;
     this.model = null;
@@ -32,17 +35,22 @@ export class PreviewComponent implements OnInit {
     this.output = 0;
   }
 
+  @Input()
+  set config(value: Configuration) {
+    this.configuration = value;
+  }
+
+  @Input()
+  set configAndChargeModel(value: Configuration) {
+    this.configuration = value;
+    this.ngOnInit();
+  }
+
   ngOnInit(): void {
     this.video = <HTMLVideoElement>document.getElementById("video");
     this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
-  }
 
-  /**
-   * Carga el modelo de la aplicación.
-   * Cada vez que cambie los valores del @input se ejecuta el método ngOnChanges
-   */
-  async ngOnChanges() {
     console.log("Cargando modelo...");
     console.log(this.configuration.id);
     this.category = "Cargando...";
@@ -61,6 +69,14 @@ export class PreviewComponent implements OnInit {
         this.category = "No se ha podido cargar el modelo correctamente.";
         console.log(error);
       });
+  }
+
+  /**
+   * Cada vez que cambie los valores del @input se ejecuta este método
+   */
+  ngOnChanges(changes: SimpleChanges) {
+    this.HTMLTitle = this.sanitizer.bypassSecurityTrustHtml(this.configuration.title);
+    this.HTMLDesc = this.sanitizer.bypassSecurityTrustHtml(this.configuration.description);
   }
 
   mostrarCamara() {
@@ -120,7 +136,7 @@ export class PreviewComponent implements OnInit {
       //si el modelo utiliza el rango, se mostrará la categoría dependiendo del rango
       if (this.configuration.useRange) {
         for (const categorie of this.configuration.categories) {
-          if (this.output > categorie.minVal && this.output <= categorie.maxVal) {
+          if (this.output >= categorie.minVal && this.output < categorie.maxVal) {
             this.category = categorie.name;
           }
         }
@@ -161,14 +177,6 @@ export class PreviewComponent implements OnInit {
       .catch(function (err) {
         console.log("No se ha podido cambiar la cámara.", err);
       })
-  }
-
-  getTextAlign(): string {
-    return Align[this.configuration.style.textAlign];
-  }
-
-  getTitleAlign(): string {
-    return Align[this.configuration.style.titleAlign];
   }
 
   getCamAlign(): string {

@@ -14,7 +14,7 @@
 <div id="preview">
     Vista previa de la aplicación:
     <ng-container *ngIf="configLoaded">
-        <app-preview [configuration]="selectedConfig"></app-preview>
+        <app-preview [configAndChargeModel]="selectedConfig"></app-preview>
     </ng-container>
 
     <div class="buttons">

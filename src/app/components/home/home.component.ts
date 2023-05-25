@@ -44,12 +44,12 @@ export class HomeComponent {
   }
 
   createDefaultConfig() {
-    const style = new Style("#000000", "#000000", "#FFFFFF", "Arial", "Arial", Align.center, Align.center, Align.center);
+    const style = new Style(Align.center, 'Arial', "#FFFFFF", "#353535", true);
     const categories = new Array<Category>;
     categories.push(new Category("Perro", 0, 0.5));
     categories.push(new Category("Gato", 0, 1));
 
-    this.appsService.post(new Configuration("default", "Título de la aplicación", "", style, categories, true)).subscribe(
+    this.appsService.post(new Configuration("default", "<h1 style='text-align: center'>Perros y gatos</h1>", "", style, categories, true)).subscribe(
       res => {
         //actualiza la lista de aplicaciones
         this.readConfig();

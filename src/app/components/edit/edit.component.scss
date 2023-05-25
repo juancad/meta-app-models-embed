@@ -9,3 +9,25 @@
 nav i.bi.bi-boxes {
     margin-right: 5px;
 }
+
+.input-group.id {
+    max-width: 350px;
+}
+
+.input-group.id, .input-group.font {
+    max-width: 350px;
+}
+
+.input-group.bgcolor {
+    max-width: 398px;
+}
+
+.input-group.color {
+    max-width: 480px;
+}
+
+input.colorPicker {
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    color: rgb(96, 96, 96);
+    border-radius: 0px 5px 5px 0px !important;
+}
