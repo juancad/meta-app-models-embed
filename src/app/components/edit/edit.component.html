@@ -144,8 +144,21 @@
         </div>
     </div>
 
-    <div id="preview">
-        Vista previa de la aplicación:
+    <div class="m-3">
+        <div *ngIf="saveMessage!=''" class="alert alert-dismissible fade show"
+            [ngClass]="{'alert-danger': saved === false, 'alert-success': saved === true}" role="alert">
+            <i class="bi bi-check-circle-fill" *ngIf="saved"></i>
+            <i class="bi bi-exclamation-circle-fill" *ngIf="!saved"></i>
+            {{saveMessage}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal"
+            (click)="saveChanges()">Guardar
+            cambios</button>
+    </div>
+
+    <div class="m-3">
         <app-preview [config]="configuration"></app-preview>
     </div>
 </div>

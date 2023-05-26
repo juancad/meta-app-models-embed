@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Configuration } from '../models/configuration.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,20 +17,47 @@ export class AppsService {
     return this.http.get<Configuration[]>(this.baseUrl + "/config/get.php");
   }
 
-  post(config: Configuration) {
-    return this.http.post(this.baseUrl + "/config/post.php", JSON.stringify(config));
+  getById(id: string): Observable<Configuration> {
+    return this.http.get<Configuration>(this.baseUrl + "/config/getById.php?id=" + id);
   }
 
-  put(config: Configuration, id: string) {
-    return this.http.put(this.baseUrl + "/config/put.php?id=" + id, JSON.stringify(config));
+  post(config: Configuration) {
+    const html = this.createHTML(config);
+    const css = this.createCSS(config);
+    const js = this.createJS(config);
+    const formData = new FormData();
+    const headers = new HttpHeaders();
+
+    formData.append('indexFile', html, html.name);
+    formData.append('cssFile', css, css.name);
+    formData.append('jsFile', js, js.name);
+    formData.append('config', JSON.stringify(config));
+
+    headers.append('Accept', 'application/json');
+
+    return this.http.post(this.baseUrl + "/config/post.php", formData, { headers });
+  }
+
+  put(config: Configuration, oldid: string) {
+    return this.http.put(this.baseUrl + "/config/put.php?oldid=" + oldid, JSON.stringify(config));
+  }
+
+  putFolderFiles(config: Configuration) {
+    const html = this.createHTML(config);
+    const css = this.createCSS(config);
+    const js = this.createJS(config);
+    const formData = new FormData();
+    const headers = new HttpHeaders();
+
+    formData.append('indexFile', html, html.name);
+    formData.append('cssFile', css, css.name);
+    formData.append('jsFile', js, js.name);
+
+    return this.http.post(this.baseUrl + "/config/putFolderFiles.php?folder=" + config.id, formData, { headers });
   }
 
   delete(id: string) {
     return this.http.delete(this.baseUrl + "/config/delete.php?id=" + id);
-  }
-
-  getById(id: string): Observable<Configuration> {
-    return this.http.get<Configuration>(this.baseUrl + "/config/getById.php?id=" + id);
   }
 
   getFolder(id: string) {
@@ -54,9 +81,8 @@ export class AppsService {
     window.open(`${this.baseUrl}/assets/${id}/index.html`, "_blank");
   }
 
-  createFolder(config: Configuration) {
-    console.log(config.id);
-    const htmlContent = "<!DOCTYPE html>\n" +
+  createHTML(config: Configuration): File {
+    const HTMLContent = "<!DOCTYPE html>\n" +
       "<html>\n" +
       "\t<head>\n" +
       "\t\t<link rel=\"stylesheet\" href=\"styles.css\">\n" +
@@ -68,31 +94,31 @@ export class AppsService {
       "\t</body>\n" +
       "</html>";
 
-    const cssContent = "body {\n" +
+    const blob = new Blob([HTMLContent], { type: 'text/html' });
+    const html = new File([blob], 'index.html', { type: 'text/html' });
+
+    return html;
+  }
+
+  createCSS(config: Configuration): File {
+    const CSSContent = "body {\n" +
       "\tbackground-color: " + config.style.backgroundColor + ";\n" +
       "\tfont-family: " + config.style.font + ";\n" +
       "\tcolor: " + config.style.textColor + ";\n" +
       "}\n\n";
 
-    const jsContent = "";
-
-    let blob = new Blob([htmlContent], { type: 'text/html' });
-    const html = new File([blob], 'index.html', { type: 'text/html' });
-    blob = new Blob([cssContent], { type: 'text/css' });
+    const blob = new Blob([CSSContent], { type: 'text/css' });
     const css = new File([blob], 'styles.css', { type: 'text/css' });
-    blob = new Blob([jsContent], { type: 'text/javascript' });
+
+    return css;
+  }
+
+  createJS(config: Configuration): File {
+    const JSContent = "";
+
+    const blob = new Blob([JSContent], { type: 'text/javascript' });
     const js = new File([blob], 'script.js', { type: 'text/javascript' });
 
-    const formData = new FormData();
-    formData.append('folderName', config.id);
-    formData.append('indexFile', html, html.name);
-    formData.append('cssFile', css, css.name);
-    formData.append('jsFile', js, js.name);
-
-    const headers = new HttpHeaders();
-    headers.append('Content-Type', 'multipart/form-data');
-    headers.append('Accept', 'application/json');
-
-    return this.http.post(this.baseUrl + "/config/createFolder.php", formData, { headers });
+    return js;
   }
 }

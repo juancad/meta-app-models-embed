@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Configuration } from 'src/app/models/configuration.model';
 import { ActivatedRoute } from '@angular/router';
 import { Category } from 'src/app/models/category.model';
@@ -6,6 +6,7 @@ import { AppsService } from 'src/app/services/apps.service';
 import { Align } from 'src/app/models/style.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Editor, Toolbar, } from 'ngx-editor';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit',
@@ -15,7 +16,6 @@ import { Editor, Toolbar, } from 'ngx-editor';
 export class EditComponent implements OnInit {
   @Input() idConfig: string;
   configuration: Configuration;
-  newId: string;
   loaded: boolean; //configuración cargada correctamente
   Align = Align;
   form: FormGroup;
@@ -25,10 +25,14 @@ export class EditComponent implements OnInit {
   toolbar: Toolbar;
   colorPresets;
   fontList: { name: string; value: string; }[];
+  saveMessage: string;
+  saved: boolean; // se han guardado los cambios o no
 
-  constructor(private appsService: AppsService, private route: ActivatedRoute, private fb: FormBuilder) {
+  constructor(private appsService: AppsService, private route: ActivatedRoute, private fb: FormBuilder, private router: Router) {
     this.formMessage = "";
+    this.saveMessage = "";
     this.loaded = false;
+    this.saved = false;
 
     this.toolbar = [
       ['bold', 'italic'],
@@ -67,7 +71,6 @@ export class EditComponent implements OnInit {
     this.route.queryParams.subscribe(
       res => {
         this.idConfig = res['id'];
-        this.newId = res['id'];
 
         this.appsService.getById(this.idConfig).subscribe(
           res => {
@@ -76,7 +79,7 @@ export class EditComponent implements OnInit {
 
             this.form = this.fb.group({
               id: [
-                this.newId,
+                this.configuration.id,
                 Validators.compose([
                   Validators.required,
                   Validators.maxLength(20),
@@ -153,7 +156,7 @@ export class EditComponent implements OnInit {
   setId(id: string) {
     if (!this.form.controls['id'].errors) {
       this.formMessage = "";
-      this.newId = id;
+      this.configuration.id = id;
     }
     else {
       console.log(this.form.controls['id'].errors);
@@ -171,5 +174,39 @@ export class EditComponent implements OnInit {
 
   setCamAlign(camAlign: Align) {
     this.configuration.style.camAlign = camAlign;
+  }
+
+  saveChanges() {
+    if (this.form.valid) {
+      this.appsService.put(this.configuration, this.idConfig).subscribe(
+        res => {
+          this.appsService.putFolderFiles(this.configuration).subscribe(
+            res => {
+              this.saved = true;
+              this.saveMessage = "Se han actualizado correctamente los cambios en la aplicación.";
+              this.idConfig = this.configuration.id;
+              this.router.navigate(['/edit'], { queryParams: { id: this.configuration.id } });
+            },
+            err => {
+              this.saved = false;
+              this.saveMessage = "No se han podido actualizar los datos correctamente. Hubo un error a la hora de crear el directorio: " + this.configuration.id;
+              console.log(err);
+            }
+          );
+        },
+        err => {
+          this.saved = false;
+          this.saveMessage = "No se han podido actualizar los datos correctamente. Por favor, revisa que el id no coincida con el id de otra aplicación.";
+          console.log(err);
+        }
+      );
+    }
+    else {
+      this.saveMessage = "No se han podido guardar los cambios de la aplicación correctamente. Por favor, revisa los campos del formulario.";
+    }
+  }
+
+  closeMessage() {
+    this.saveMessage = "";
   }
 }

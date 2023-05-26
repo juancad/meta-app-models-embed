@@ -11,8 +11,7 @@
     </button>
 </nav>
 
-<div id="preview">
-    Vista previa de la aplicación:
+<div class="m-3">
     <ng-container *ngIf="configLoaded">
         <app-preview [configAndChargeModel]="selectedConfig"></app-preview>
     </ng-container>
