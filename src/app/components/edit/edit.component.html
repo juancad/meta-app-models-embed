@@ -10,17 +10,17 @@
                         data-bs-target="#pills-titulo" type="button" role="tab" aria-controls="pills-titulo"
                         aria-selected="true">Id y título</button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="nav-item" role="description">
                     <button class="nav-link" id="pills-descripcion-tab" data-bs-toggle="pill"
                         data-bs-target="#pills-descripcion" type="button" role="tab" aria-controls="pills-descripcion"
                         aria-selected="true">Descripción</button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="nav-item" role="categories">
                     <button class="nav-link" id="pills-categories-tab" data-bs-toggle="pill"
                         data-bs-target="#pills-categories" type="button" role="tab" aria-controls="pills-categories"
                         aria-selected="false">Categorías</button>
                 </li>
-                <li class="nav-item" role="presentation">
+                <li class="nav-item" role="style">
                     <button class="nav-link" id="pills-style-tab" data-bs-toggle="pill" data-bs-target="#pills-style"
                         type="button" role="tab" aria-controls="pills-style" aria-selected="false">Estilo</button>
                 </li>
@@ -64,20 +64,20 @@
                 <div class="tab-pane fade" id="pills-categories" role="tabpanel" aria-labelledby="pills-categories-tab">
                     <!--CATEGORÍAS-->
                     <div class="form-check form-switch py-1">
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckRange"
                             [(ngModel)]="configuration.useRange">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Utilizar rango de
+                        <label class="form-check-label" for="flexSwitchCheckRange">Utilizar rango de
                             valores</label>
                     </div>
                     <ul class="list-group">
                         <li class="list-group-item" *ngFor="let categorie of configuration.categories; index as i;">
                             <div class="row g-3">
-                                <div class="input-group input-group-sm col">
+                                <div class="input-group input-group-sm col title">
                                     <span class="input-group-text" maxlength="100">Nombre de la categoría
                                         {{i}}:</span>
                                     <input [(ngModel)]="categorie.name" type="text" class="form-control">
                                 </div>
-                                <div *ngIf="configuration.useRange" class="input-group input-group-sm col">
+                                <div *ngIf="configuration.useRange" class="input-group input-group-sm col range">
                                     <span class="input-group-text">Rango de valores:</span>
                                     <span class="input-group-text">&#62;</span>
                                     <input [(ngModel)]="categorie.minVal" type=number step="0.1" class="form-control">
@@ -99,12 +99,12 @@
                 <div class="tab-pane fade" id="pills-style" role="tabpanel" aria-labelledby="pills-style-tab">
                     <!--ESTILO-->
                     <div class="form-check form-switch py-1">
-                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckNumeric"
                             [(ngModel)]="configuration.style.showOutput">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Mostrar resultado numérico</label>
+                        <label class="form-check-label" for="flexSwitchCheckNumeric">Mostrar resultado numérico</label>
                     </div>
 
-                    <label>Selecciona la alineación de la cámara:&nbsp;&nbsp;</label>
+                    Selecciona la alineación de la cámara:&nbsp;&nbsp;
                     <div class="btn-group btn-group-toggle">
                         <button class="btn btn-secondary" [class.active]="configuration.style.camAlign === Align.left"
                             (click)="setCamAlign(Align.left)"><i class="bi bi-text-left"></i></button>
@@ -153,9 +153,31 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
-        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal"
-            (click)="saveChanges()">Guardar
-            cambios</button>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Guardar cambios
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Guardar cambios</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Al pulsar en confirmar se actualizará la
+                        configuración de la aplicación por la nueva configuración, ¿estas seguro de que deseas
+                        guardar los cambios?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-warning" (click)="saveChanges()" data-bs-dismiss="modal">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="m-3">

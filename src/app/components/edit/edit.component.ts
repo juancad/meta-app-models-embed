@@ -183,7 +183,7 @@ export class EditComponent implements OnInit {
           this.appsService.putFolderFiles(this.configuration).subscribe(
             res => {
               this.saved = true;
-              this.saveMessage = "Se han actualizado correctamente los cambios en la aplicación.";
+              this.saveMessage = "Se han guardado correctamente los cambios en la aplicación.";
               this.idConfig = this.configuration.id;
               this.router.navigate(['/edit'], { queryParams: { id: this.configuration.id } });
             },

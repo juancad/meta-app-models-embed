@@ -31,3 +31,11 @@ input.colorPicker {
     color: rgb(96, 96, 96);
     border-radius: 0px 5px 5px 0px !important;
 }
+
+.title input {
+    min-width: 100px !important;
+}
+
+.range input {
+    min-width: 60px !important;
+}

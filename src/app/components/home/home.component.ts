@@ -14,6 +14,7 @@ export class HomeComponent {
   title;
   configurations: Configuration[];
   selectedConfig: Configuration;
+  deleteConfigId: string = null;
   configLoaded;
 
   constructor(private appsService: AppsService, private router: Router) {
@@ -61,12 +62,16 @@ export class HomeComponent {
     )
   }
 
-  getSelected(): Configuration {
+  getSelectedConfig(): Configuration {
     return this.selectedConfig;
   }
 
-  setSelected(config: Configuration): void {
+  setSelectedConfig(config: Configuration): void {
     this.selectedConfig = structuredClone(config);
+  }
+
+  setDeleteConfigId(id: string) {
+    this.deleteConfigId = id;
   }
 
   readConfig() {
@@ -87,10 +92,10 @@ export class HomeComponent {
     );
   }
 
-  delete(id: string) {
-    this.appsService.delete(id).subscribe(
+  onDelete() {
+    this.appsService.delete(this.deleteConfigId).subscribe(
       res => {
-        this.readConfig();
+        location.reload();
       },
       err => {
         console.error(err);
@@ -109,4 +114,6 @@ export class HomeComponent {
   openEdit() {
     this.router.navigate(['/edit'], { queryParams: { id: this.selectedConfig.id } });
   }
+
+
 }
