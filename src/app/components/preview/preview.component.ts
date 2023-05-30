@@ -61,7 +61,7 @@ export class PreviewComponent implements OnInit, OnChanges {
         this.model = model;
         this.inputShape = this.model.inputs[0].shape;
         console.log("Modelo cargado. inputShape:" + this.inputShape);
-        this.mostrarCamara();
+        this.showCam();
       })
       .catch((error) => {
         this.model = null;
@@ -79,8 +79,8 @@ export class PreviewComponent implements OnInit, OnChanges {
     this.HTMLDesc = this.sanitizer.bypassSecurityTrustHtml(this.configuration.description);
   }
 
-  mostrarCamara() {
-    let opciones = {
+  showCam() {
+    let options = {
       audio: false,
       video: {
         facingMode: "user", width: this.camWidth, height: this.camHeight
@@ -88,15 +88,15 @@ export class PreviewComponent implements OnInit, OnChanges {
     }
 
     if (navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia(opciones)
+      navigator.mediaDevices.getUserMedia(options)
         .then((stream) => {
           this.currentStream = stream;
           this.video.srcObject = stream;
           this.video.onloadedmetadata = () => {
             this.video.play();
           };
-          this.procesarCamara();
-          this.predecir();
+          this.processCamera();
+          this.predict();
         })
         .catch(function (err) {
           alert("No se ha podido utilizar la cámara.");
@@ -108,12 +108,12 @@ export class PreviewComponent implements OnInit, OnChanges {
     }
   }
 
-  procesarCamara() {
+  processCamera() {
     this.ctx.drawImage(this.video, 0, 0, this.camWidth, this.camHeight, 0, 0, this.camWidth, this.camHeight);
-    setTimeout(this.procesarCamara.bind(this), 20);
+    setTimeout(this.processCamera.bind(this), 20);
   }
 
-  predecir() {
+  predict() {
     if (this.model != null) {
       //el método tidy() libera la memoria después de ejecutar una serie de operaciones
       tf.tidy(() => {
@@ -148,7 +148,7 @@ export class PreviewComponent implements OnInit, OnChanges {
       }
     }
 
-    setTimeout(this.predecir.bind(this), 100);
+    setTimeout(this.predict.bind(this), 100);
   }
 
   cambiarCamara() {

@@ -16,6 +16,7 @@ import { EditComponent } from './components/edit/edit.component';
 import { HomeComponent } from './components/home/home.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
+import { Error404Component } from './components/error404/error404.component';
 
 //services
 import { AppsService } from './services/apps.service';
@@ -28,7 +29,8 @@ import { AppsService } from './services/apps.service';
     EditComponent,
     HomeComponent,
     FooterComponent,
-    NavbarComponent
+    NavbarComponent,
+    Error404Component
   ],
   imports: [
     BrowserModule,

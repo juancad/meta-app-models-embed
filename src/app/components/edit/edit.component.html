@@ -29,7 +29,6 @@
                 <div class="tab-pane fade show active" id="pills-titulo" role="tabpanel"
                     aria-labelledby="pills-titulo-tab">
                     <!--Título-->
-                    <div *ngIf="formMessage!=''" class="alert alert-danger" role="alert">{{formMessage}}</div>
                     <form [formGroup]="form">
                         Anterior id: {{configuration.id}}<br />
                         <div class="input-group id">
@@ -49,8 +48,8 @@
                 </div>
                 <div class="tab-pane fade" id="pills-descripcion" role="tabpanel"
                     aria-labelledby="pills-descripcion-tab">
+
                     <!--Descripcion-->
-                    <div *ngIf="formMessage!=''" class="alert alert-danger" role="alert">{{formMessage}}</div>
                     <form [formGroup]="form">
                         Escribe a continuación la descripción de la aplicación:
                         <br />
@@ -152,9 +151,11 @@
             {{saveMessage}}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        
+        <div *ngIf="errorMessage!=''" class="alert alert-danger" role="alert">{{errorMessage}}</div>
 
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" [disabled]="errorMessage!=''">
             Guardar cambios
         </button>
 

@@ -14,13 +14,23 @@ export class HomeComponent {
   title;
   configurations: Configuration[];
   selectedConfig: Configuration;
-  deleteConfigId: string = null;
+  deleteConfigId: string;
   configLoaded;
+  json: File;
+  jsonMessage: string;
+  jsonFormat: boolean;
+  bin: FileList;
+  binMessage: string;
+  binFormat: boolean;
 
   constructor(private appsService: AppsService, private router: Router) {
     this.title = "meta-app-models";
     this.configurations = [];
     this.configLoaded = false;
+    this.deleteConfigId = null;
+    this.jsonMessage = "";
+    this.jsonFormat = false;
+    this.binFormat = false;
   }
 
   ngOnInit() {
@@ -38,8 +48,8 @@ export class HomeComponent {
         }
       },
       err => {
-        this.configLoaded = false;
         console.error(err);
+        this.router.navigateByUrl('/404');
       }
     );
   }
@@ -52,8 +62,7 @@ export class HomeComponent {
 
     this.appsService.post(new Configuration("default", "<h1 style='text-align: center'>Perros y gatos</h1>", "", style, categories, true)).subscribe(
       res => {
-        //actualiza la lista de aplicaciones
-        this.readConfig();
+        location.reload(); // vuelve a cargar para actualizar la lista
         console.log(res);
       },
       err => {
@@ -95,12 +104,57 @@ export class HomeComponent {
   onDelete() {
     this.appsService.delete(this.deleteConfigId).subscribe(
       res => {
-        location.reload();
+        location.reload(); // vuelve a cargar para actualizar la lista
       },
       err => {
         console.error(err);
       }
     );
+  }
+
+  onCreate() {
+
+  }
+
+  selectJSON(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      if (file.name === 'model.json') {
+        this.jsonFormat = true;
+        this.jsonMessage = "";
+        this.json = file;
+      }
+      else {
+        this.jsonFormat = false;
+        this.jsonMessage = "El archivo debe llamarse \"model\" y tener extensión \".json\"";
+      }
+    }
+  }
+
+  selectBIN(event: any) {
+    const files: FileList = event.target.files;
+    const pattern = /^group\d+-shard\d+of\d+\.bin$/;
+    let cont = 0;
+
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        if (pattern.test(files[i].name)) {
+          cont ++;
+          console.log(files[i].name);
+          console.log(cont);
+        }
+      }
+
+      if (cont == files.length) {
+        this.binFormat = true;
+        this.binMessage = "";
+        this.bin = files;
+      }
+      else {
+        this.binFormat = false;
+        this.binMessage = "Los archivos seleccionados deben seguir el patrón \"groupG-shardNofM\" donde G es el número del grupo, N es el número del archivo del grupo y M es el total de ficheros del grupo, además de tener formato \".bin\"";
+      }
+    }
   }
 
   download(id: string) {
@@ -114,6 +168,4 @@ export class HomeComponent {
   openEdit() {
     this.router.navigate(['/edit'], { queryParams: { id: this.selectedConfig.id } });
   }
-
-
 }

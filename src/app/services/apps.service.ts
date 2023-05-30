@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Configuration } from '../models/configuration.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -76,7 +76,7 @@ export class AppsService {
         anchor.click();
       });
   }
-
+  
   view(id: string) {
     window.open(`${this.baseUrl}/assets/${id}/index.html`, "_blank");
   }

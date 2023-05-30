@@ -19,7 +19,7 @@ export class EditComponent implements OnInit {
   loaded: boolean; //configuración cargada correctamente
   Align = Align;
   form: FormGroup;
-  formMessage: string;
+  errorMessage: string;
   editorTitle: Editor;
   editorDesc: Editor;
   toolbar: Toolbar;
@@ -29,7 +29,7 @@ export class EditComponent implements OnInit {
   saved: boolean; // se han guardado los cambios o no
 
   constructor(private appsService: AppsService, private route: ActivatedRoute, private fb: FormBuilder, private router: Router) {
-    this.formMessage = "";
+    this.errorMessage = "";
     this.saveMessage = "";
     this.loaded = false;
     this.saved = false;
@@ -125,49 +125,49 @@ export class EditComponent implements OnInit {
 
   setTitle(newTitle: any) {
     if (!this.form.controls['title'].errors) {
-      this.formMessage = "";
+      this.errorMessage = "";
       this.configuration.title = newTitle;
 
       this.configuration = Object.assign({}, this.configuration);
     }
     else {
       if (this.form.controls['title'].errors['required'] || this.form.controls['title'].errors['minlength']) {
-        this.formMessage = "El título de la aplicación no puede estar vacío o ser tan corto.";
+        this.errorMessage = "El título de la aplicación no puede estar vacío o ser tan corto.";
       }
       if (this.form.controls['title'].errors['maxlength']) {
-        this.formMessage = "El título de la aplicación no puede contener más de 1000 caracteres.";
+        this.errorMessage = "El título de la aplicación no puede contener más de 1000 caracteres.";
       }
     }
   }
 
   setDescription(newDescription: any) {
     if (!this.form.controls['description'].errors) {
-      this.formMessage = "";
+      this.errorMessage = "";
       this.configuration.description = newDescription;
       this.configuration = Object.assign({}, this.configuration);
     }
     else {
       if (this.form.controls['description'].errors['maxlength']) {
-        this.formMessage = "La descripción de la aplicación no puede contener más de 15000 caracteres.";
+        this.errorMessage = "La descripción de la aplicación no puede contener más de 15000 caracteres.";
       }
     }
   }
 
   setId(id: string) {
     if (!this.form.controls['id'].errors) {
-      this.formMessage = "";
+      this.errorMessage = "";
       this.configuration.id = id;
     }
     else {
       console.log(this.form.controls['id'].errors);
       if (this.form.controls['id'].errors['required']) {
-        this.formMessage = "El identificador no puede estar vacío.";
+        this.errorMessage = "El identificador no puede estar vacío.";
       }
       if (this.form.controls['id'].errors['pattern']) {
-        this.formMessage = "El identificador contiene caracteres no válidos. Solo puede contener caracteres alfanuméricos, puntos, guiones y/o guiones bajos.";
+        this.errorMessage = "El identificador contiene caracteres no válidos. Solo puede contener caracteres alfanuméricos, puntos, guiones y/o guiones bajos.";
       }
       if (this.form.controls['id'].errors['maxlength']) {
-        this.formMessage = "El identificdor no puede contener más de 20 caracteres.";
+        this.errorMessage = "El identificdor no puede contener más de 20 caracteres.";
       }
     }
   }
