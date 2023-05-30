@@ -22,27 +22,14 @@ export class AppsService {
   }
 
   post(config: Configuration) {
-    const html = this.createHTML(config);
-    const css = this.createCSS(config);
-    const js = this.createJS(config);
-    const formData = new FormData();
-    const headers = new HttpHeaders();
-
-    formData.append('indexFile', html, html.name);
-    formData.append('cssFile', css, css.name);
-    formData.append('jsFile', js, js.name);
-    formData.append('config', JSON.stringify(config));
-
-    headers.append('Accept', 'application/json');
-
-    return this.http.post(this.baseUrl + "/config/post.php", formData, { headers });
+    return this.http.post(this.baseUrl + "/config/post.php", JSON.stringify(config));
   }
 
   put(config: Configuration, oldid: string) {
     return this.http.put(this.baseUrl + "/config/put.php?oldid=" + oldid, JSON.stringify(config));
   }
 
-  putFolderFiles(config: Configuration) {
+  uploadAppFiles(config: Configuration) {
     const html = this.createHTML(config);
     const css = this.createCSS(config);
     const js = this.createJS(config);
@@ -53,7 +40,18 @@ export class AppsService {
     formData.append('cssFile', css, css.name);
     formData.append('jsFile', js, js.name);
 
-    return this.http.post(this.baseUrl + "/config/putFolderFiles.php?folder=" + config.id, formData, { headers });
+    return this.http.post(this.baseUrl + "/config/uploadAppFiles.php?id=" + config.id, formData, { headers });
+  }
+
+  uploadModelFIles(id: string, json: File, bin: FileList) {
+    const formData = new FormData();
+    formData.append('json', json, json.name);
+
+    for (let i = 0; i < bin.length; i++) {
+      formData.append('bin[]', bin[i], bin[i].name);
+    }
+
+    return this.http.post(this.baseUrl + "/config/uploadModelFiles.php?id=" + id, formData);
   }
 
   delete(id: string) {
@@ -63,7 +61,7 @@ export class AppsService {
   getFolder(id: string) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const options = { headers: headers, responseType: 'blob' as 'json' };
-    const rutaDirectorio = "../assets/" + id;
+    const rutaDirectorio = "../apps/" + id;
     const rutaCodificada = encodeURIComponent(rutaDirectorio);
 
     this.http.get(this.baseUrl + `/config/download.php?ruta=${rutaCodificada}`, options)
@@ -78,7 +76,7 @@ export class AppsService {
   }
   
   view(id: string) {
-    window.open(`${this.baseUrl}/assets/${id}/index.html`, "_blank");
+    window.open(`${this.baseUrl}/apps/${id}/index.html`, "_blank");
   }
 
   createHTML(config: Configuration): File {

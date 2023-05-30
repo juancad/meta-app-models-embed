@@ -4,6 +4,7 @@ import { Configuration } from 'src/app/models/configuration.model';
 import { Align } from 'src/app/models/style.model';
 import { Router } from '@angular/router'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { AppsService } from 'src/app/services/apps.service';
 
 @Component({
   selector: 'app-preview',
@@ -26,7 +27,7 @@ export class PreviewComponent implements OnInit, OnChanges {
   output: number;
   inputShape: any;
 
-  constructor(private router: Router, private sanitizer: DomSanitizer) {
+  constructor(private router: Router, private sanitizer: DomSanitizer, private appsService: AppsService) {
     this.camWidth = 420;
     this.camHeight = 420;
     this.model = null;
@@ -52,9 +53,8 @@ export class PreviewComponent implements OnInit, OnChanges {
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
     console.log("Cargando modelo...");
-    console.log(this.configuration.id);
+    const url = this.appsService.baseUrl + "/apps/" + this.configuration.id + "/assets/model.json";
     this.category = "Cargando...";
-    const url = "http://localhost/meta-app-models/assets/" + this.configuration.id + "/model/model.json";
 
     tf.loadLayersModel(url)
       .then((model) => {
@@ -134,17 +134,19 @@ export class PreviewComponent implements OnInit, OnChanges {
       });
 
       //si el modelo utiliza el rango, se mostrará la categoría dependiendo del rango
-      if (this.configuration.useRange) {
-        for (const categorie of this.configuration.categories) {
-          if (this.output >= categorie.minVal && this.output < categorie.maxVal) {
-            this.category = categorie.name;
+      if (this.configuration.categories.length > 0) {
+        if (this.configuration.useRange) {
+          for (const categorie of this.configuration.categories) {
+            if (this.output >= categorie.minVal && this.output < categorie.maxVal) {
+              this.category = categorie.name;
+            }
           }
         }
-      }
-      //si el modelo no utiliza el rango, se mostrará la categoría dependiendo del índice
-      else {
-        const index = tf.argMax(this.output).dataSync()[0];
-        this.category = this.configuration.categories[index].name;
+        //si el modelo no utiliza el rango, se mostrará la categoría dependiendo del índice
+        else {
+          const index = tf.argMax(this.output).dataSync()[0];
+          this.category = this.configuration.categories[index].name;
+        }
       }
     }
 

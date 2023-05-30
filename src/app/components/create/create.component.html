@@ -1,0 +1,42 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Crear una nueva aplicación</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Introduce el id de la aplicación a crear.
+            <form [formGroup]="form">
+                <div class="input-group id">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Id de la aplicación</span>
+                    <input #id (ngModelChange)="setId(id.value)" type="text" formControlName="id" class="form-control"
+                        placeholder="Id. de la aplicación" [ngClass]="{'is-invalid': form.controls['id'].errors}">
+                </div>
+            </form>
+            <p class="text-danger">{{idMessage}}</p>
+
+            <small>Para crear una nueva aplicación es necesario seleccionar el modelo a incrustar (en formato .json) y
+            los archivos necesarios (en formato .bin).</small>
+            <br /><br />
+            Selecciona a continuación el modelo "model.json" a utilizar:
+            <br />
+            <input type="file" accept=".json" (change)="selectJSON($event)">
+            <br />
+            <p class="text-danger">{{jsonMessage}}</p>
+            <br />
+            Selecciona a continuación los archivos (en formato .bin) necesarios:
+            <br />
+            <input type="file" (change)="selectBIN($event)" multiple accept=".bin">
+            <br />
+            <p class="text-danger">{{binMessage}}</p>
+            <br />
+            Al pulsar en "crear aplicación" se creará la aplicación y accederás al editor de aplicaciones para
+            poder editarla.
+        </div>
+        <div class="modal-footer">
+            <button #close type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" (click)="onCreate()"
+                [disabled]="!form.valid || !jsonFormat || !binFormat">Crear aplicación</button>
+        </div>
+    </div>
+</div>

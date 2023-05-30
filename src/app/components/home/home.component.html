@@ -1,111 +1,83 @@
-<div *ngIf="configLoaded">
-    <nav class="navbar navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">
-            <i class="bi bi-boxes"></i>
-            Incrustado de modelos
-        </a>
+<nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">
+        <i class="bi bi-boxes"></i>
+        Incrustado de modelos
+    </a>
 
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </nav>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</nav>
 
-    <div class="m-3">
-        <ng-container>
-            <app-preview [configAndChargeModel]="selectedConfig"></app-preview>
-        </ng-container>
+<div class="m-3">
+    <ng-container *ngIf="configurations.length > 0">
+        <app-preview [configAndChargeModel]="selectedConfig"></app-preview>
+    </ng-container>
 
-        <div class="buttons">
-            <button class="btn btn-warning" type="button" (click)="openEdit()"><i class="bi bi-pencil-square"></i>
-                Editar la aplicación</button>
-            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalCreate"><i
-                    class="bi bi-plus-square"></i>
-                Crear
-                nueva aplicación</button>
-        </div>
+    <div *ngIf="configurations.length == 0">
+        No se ha creado ninguna aplicación. Pulsa en crear nueva aplicación para crear tu primera aplicación.
     </div>
 
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-        <div class="offcanvas-header">
-            <h5 id="offcanvasRightLabel">Lista de aplicaciones</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="list-group">
-                <a *ngFor="let config of configurations.reverse()" [class.active]="config.id === getSelectedConfig().id"
-                    (click)="setSelectedConfig(config)" class="list-group-item list-group-item-action">{{config.id}}
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-light btn-sm text-danger" data-bs-toggle="modal"
-                        data-bs-target="#modalDelete" onclick="event.stopPropagation()"
-                        (click)="setDeleteConfigId(config.id)">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
-                    <button type="button" (click)="view(config.id)" class="btn btn-light btn-sm"
-                        onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
-                    <button type="button" (click)="download(config.id)" class="btn btn-light btn-sm"
-                        onclick="event.stopPropagation()"><i class="bi bi-download"></i></button>
-                </a>
-            </div>
-        </div>
+    <div class="buttons">
+        <button class="btn btn-warning" type="button" (click)="openEdit()"><i class="bi bi-pencil-square"
+                *ngIf="configurations.length > 0 && selectedConfig!=null"></i>
+            Editar la aplicación</button>
+        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalCreate"><i
+                class="bi bi-plus-square"></i>
+            Crear
+            nueva aplicación</button>
     </div>
-
-    <!-- Modal: Eliminar aplicación -->
-    <div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="modalDeleteLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Eliminar aplicación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Al pulsar en confirmar se eliminará la aplicación de la lista de aplicaciones, ¿deseas
-                    eliminar la aplicación?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
-                        (click)="onDelete()">Confirmar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Crear aplicación -->
-    <div class="modal fade" id="modalCreate" tabindex="-1" aria-labelledby="modalCreateLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Crear una nueva aplicación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Para crear una nueva aplicación es necesario seleccionar el modelo a incrustar (en formato .json) y
-                    los archivos necesarios (en formato .bin) para que funcione la aplicación.
-                    <br/><br/>
-                    Selecciona a continuación el modelo "model.json" a utilizar:
-                    <br/>
-                    <input type="file" accept=".json" (change)="selectJSON($event)">
-                    <br/>
-                    <p class="text-danger">{{jsonMessage}}</p>
-                    <br/>
-                    Selecciona a continuación los archivos (en formato .bin) necesarios:
-                    <br/>
-                    <input type="file" (change)="selectBIN($event)" multiple accept=".bin">
-                    <br/>
-                    <p class="text-danger">{{binMessage}}</p>
-                    <br/>
-                    Al pulsar en "crear aplicación" se creará la aplicación y accederás al editor de aplicaciones para
-                    poder editarla.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="onCreate()"
-                        [disabled]="!jsonFormat || !binFormat">Crear aplicación</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <app-footer></app-footer>
 </div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Lista de aplicaciones</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="list-group" *ngIf="configurations.length > 0">
+            <a *ngFor="let config of configurations.reverse()" [class.active]="config.id === getSelectedConfig().id"
+                (click)="setSelectedConfig(config)" class="list-group-item list-group-item-action">{{config.id}}
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-light btn-sm text-danger" data-bs-toggle="modal"
+                    data-bs-target="#modalDelete" onclick="event.stopPropagation()"
+                    (click)="setDeleteConfigId(config.id)">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+                <button type="button" (click)="view(config.id)" class="btn btn-light btn-sm"
+                    onclick="event.stopPropagation()"><i class="bi bi-eye-fill"></i></button>
+                <button type="button" (click)="download(config.id)" class="btn btn-light btn-sm"
+                    onclick="event.stopPropagation()"><i class="bi bi-download"></i></button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Eliminar aplicación -->
+<div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="modalDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Eliminar aplicación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Al pulsar en confirmar se eliminará la aplicación de la lista de aplicaciones, ¿deseas
+                eliminar la aplicación?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                    (click)="onDelete()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Crear aplicación -->
+<div class="modal fade" id="modalCreate" tabindex="-1" aria-labelledby="modalCreateLabel" aria-hidden="true">
+    <app-create></app-create>
+</div>
+<app-footer></app-footer>

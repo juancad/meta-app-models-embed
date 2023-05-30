@@ -180,7 +180,7 @@ export class EditComponent implements OnInit {
     if (this.form.valid) {
       this.appsService.put(this.configuration, this.idConfig).subscribe(
         res => {
-          this.appsService.putFolderFiles(this.configuration).subscribe(
+          this.appsService.uploadAppFiles(this.configuration).subscribe(
             res => {
               this.saved = true;
               this.saveMessage = "Se han guardado correctamente los cambios en la aplicación.";

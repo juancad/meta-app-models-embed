@@ -16,21 +16,13 @@ export class HomeComponent {
   selectedConfig: Configuration;
   deleteConfigId: string;
   configLoaded;
-  json: File;
-  jsonMessage: string;
-  jsonFormat: boolean;
-  bin: FileList;
-  binMessage: string;
-  binFormat: boolean;
+
 
   constructor(private appsService: AppsService, private router: Router) {
     this.title = "meta-app-models";
     this.configurations = [];
-    this.configLoaded = false;
+    this.selectedConfig = null;
     this.deleteConfigId = null;
-    this.jsonMessage = "";
-    this.jsonFormat = false;
-    this.binFormat = false;
   }
 
   ngOnInit() {
@@ -39,17 +31,12 @@ export class HomeComponent {
         this.configurations = res;
         if (this.configurations.length > 0) {
           this.selectedConfig = structuredClone(this.configurations[this.configurations.length - 1]);
-          this.configLoaded = true;
         }
-        else {
-          this.createDefaultConfig();
-          this.selectedConfig = structuredClone(this.configurations[this.configurations.length - 1]);
-          this.configLoaded = true;
-        }
+        console.log(this.configurations);
       },
       err => {
         console.error(err);
-        this.router.navigateByUrl('/404');
+        this.router.navigate(['/404']);
       }
     );
   }
@@ -110,51 +97,6 @@ export class HomeComponent {
         console.error(err);
       }
     );
-  }
-
-  onCreate() {
-
-  }
-
-  selectJSON(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      if (file.name === 'model.json') {
-        this.jsonFormat = true;
-        this.jsonMessage = "";
-        this.json = file;
-      }
-      else {
-        this.jsonFormat = false;
-        this.jsonMessage = "El archivo debe llamarse \"model\" y tener extensión \".json\"";
-      }
-    }
-  }
-
-  selectBIN(event: any) {
-    const files: FileList = event.target.files;
-    const pattern = /^group\d+-shard\d+of\d+\.bin$/;
-    let cont = 0;
-
-    if (files) {
-      for (let i = 0; i < files.length; i++) {
-        if (pattern.test(files[i].name)) {
-          cont ++;
-          console.log(files[i].name);
-          console.log(cont);
-        }
-      }
-
-      if (cont == files.length) {
-        this.binFormat = true;
-        this.binMessage = "";
-        this.bin = files;
-      }
-      else {
-        this.binFormat = false;
-        this.binMessage = "Los archivos seleccionados deben seguir el patrón \"groupG-shardNofM\" donde G es el número del grupo, N es el número del archivo del grupo y M es el total de ficheros del grupo, además de tener formato \".bin\"";
-      }
-    }
   }
 
   download(id: string) {
