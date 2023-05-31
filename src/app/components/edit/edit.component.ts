@@ -104,11 +104,13 @@ export class EditComponent implements OnInit {
           },
           err => {
             console.error(err);
+            this.router.navigate(['/404']);
           }
         );
       },
       err => {
         console.log(err);
+        this.router.navigate(['/404']);
       });
   }
 

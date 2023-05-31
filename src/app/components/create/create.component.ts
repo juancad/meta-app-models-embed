@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Category } from 'src/app/models/category.model';
@@ -11,7 +11,7 @@ import { AppsService } from 'src/app/services/apps.service';
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.scss']
 })
-export class CreateComponent implements OnInit {
+export class CreateComponent {
   @ViewChild('close') closeModal;
   configuration: Configuration;
   idMessage: string;
@@ -23,12 +23,9 @@ export class CreateComponent implements OnInit {
   binFormat: boolean;
   form: FormGroup;
   errorMessage: string;
+  loading: boolean;
 
   constructor(private fb: FormBuilder, private appsService: AppsService, private router: Router) {
-
-  }
-
-  ngOnInit(): void {
     this.configuration = new Configuration("", "<h1 style='text-align: center'>Titulo de la aplicación</h1>", "", new Style(Align.center, 'Arial', "#FFFFFF", "#353535", true), new Array<Category>, false);
     this.idMessage = "El identificador no puede estar vacío.";
     this.jsonMessage = "Debes seleccionar un archivo en formato \".json\"";
@@ -36,6 +33,7 @@ export class CreateComponent implements OnInit {
     this.binMessage = "Debes seleccionar los archivos en formato \".bin\"";
     this.binFormat = false;
     this.errorMessage = "";
+    this.loading = false;
 
     this.form = this.fb.group({
       id: [
@@ -109,6 +107,8 @@ export class CreateComponent implements OnInit {
 
   onCreate() {
     if (this.form.valid && this.jsonFormat && this.binFormat) {
+      this.loading = true;
+
       this.appsService.post(this.configuration).subscribe( // añade la configuración a la base de datos
         res => {
           this.appsService.uploadAppFiles(this.configuration).subscribe( // crea la carpeta y añade los archivos de la aplicación
@@ -117,21 +117,26 @@ export class CreateComponent implements OnInit {
                 res => {
                   this.errorMessage = "";
                   this.closeModal.nativeElement.click();
+                  this.loading = false;
                   this.router.navigate(['/edit'], { queryParams: { id: this.configuration.id } });
                 },
                 err => {
                   this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de subir los modelos al servidor.";
+                  this.loading = false;
+                  console.log(err);
                 }
               )
             },
             err => {
               this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de crear el directorio: " + this.configuration.id;
+              this.loading = false;
               console.log(err);
             }
           );
         },
         err => {
-          this.errorMessage = "No se ha podido crear la aplicación, el id ya existe. Trata de elegir otro id";
+          this.errorMessage = "No se ha podido crear la aplicación, el id ya existe.";
+          this.loading = false;
           console.log(err);
         }
       );

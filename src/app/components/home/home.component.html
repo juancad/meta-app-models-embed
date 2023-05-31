@@ -21,8 +21,8 @@
     </div>
 
     <div class="buttons">
-        <button class="btn btn-warning" type="button" (click)="openEdit()"><i class="bi bi-pencil-square"
-                *ngIf="configurations.length > 0 && selectedConfig!=null"></i>
+        <button class="btn btn-warning" type="button" (click)="openEdit()"
+            *ngIf="configurations.length > 0 && selectedConfig!=null"><i class="bi bi-pencil-square"></i>
             Editar la aplicación</button>
         <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalCreate"><i
                 class="bi bi-plus-square"></i>

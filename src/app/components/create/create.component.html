@@ -16,7 +16,7 @@
             <p class="text-danger">{{idMessage}}</p>
 
             <small>Para crear una nueva aplicación es necesario seleccionar el modelo a incrustar (en formato .json) y
-            los archivos necesarios (en formato .bin).</small>
+                los archivos necesarios (en formato .bin).</small>
             <br /><br />
             Selecciona a continuación el modelo "model.json" a utilizar:
             <br />
@@ -32,6 +32,14 @@
             <br />
             Al pulsar en "crear aplicación" se creará la aplicación y accederás al editor de aplicaciones para
             poder editarla.
+            <br /><br />
+            <div class="d-flex align-items-center" *ngIf="loading">
+                Creando la aplicación y subiendo los archivos...
+                <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
+            </div>
+            <div class="alert alert-danger" role="alert" *ngIf="errorMessage!=''">
+                {{errorMessage}}
+            </div>
         </div>
         <div class="modal-footer">
             <button #close type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
