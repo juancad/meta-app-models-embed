@@ -151,11 +151,12 @@
             {{saveMessage}}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        
+
         <div *ngIf="errorMessage!=''" class="alert alert-danger" role="alert">{{errorMessage}}</div>
 
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal" [disabled]="errorMessage!=''">
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal"
+            [disabled]="errorMessage!=''">
             Guardar cambios
         </button>
 
@@ -174,7 +175,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="button" class="btn btn-warning" (click)="saveChanges()" data-bs-dismiss="modal">Confirmar</button>
+                        <button type="button" class="btn btn-warning" (click)="saveChanges()"
+                            data-bs-dismiss="modal">Confirmar</button>
                     </div>
                 </div>
             </div>

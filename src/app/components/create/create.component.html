@@ -37,8 +37,7 @@
                 Creando la aplicación y subiendo los archivos...
                 <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
             </div>
-            <div class="alert alert-danger" role="alert" *ngIf="errorMessage!=''">
-                {{errorMessage}}
+            <div class="alert alert-danger" role="alert" *ngIf="errorMessage!=''" [innerHTML]="errorMessage">
             </div>
         </div>
         <div class="modal-footer">

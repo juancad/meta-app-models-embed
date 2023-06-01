@@ -5,6 +5,7 @@ import { Category } from 'src/app/models/category.model';
 import { Configuration } from 'src/app/models/configuration.model';
 import { Align, Style } from 'src/app/models/style.model';
 import { AppsService } from 'src/app/services/apps.service';
+import * as tf from '@tensorflow/tfjs';
 
 @Component({
   selector: 'app-create',
@@ -105,41 +106,53 @@ export class CreateComponent {
     }
   }
 
-  onCreate() {
+  async onCreate() {
     if (this.form.valid && this.jsonFormat && this.binFormat) {
       this.loading = true;
+      const modelTopologyFiles = [this.json];
+      const weightPathFiles = Array.from(this.bin);
 
-      this.appsService.post(this.configuration).subscribe( // añade la configuración a la base de datos
-        res => {
-          this.appsService.uploadAppFiles(this.configuration).subscribe( // crea la carpeta y añade los archivos de la aplicación
+      const modelIOHandler = tf.io.browserFiles([...modelTopologyFiles, ...weightPathFiles]);
+
+      tf.loadLayersModel(modelIOHandler)
+        .then(model => {
+          this.appsService.post(this.configuration).subscribe( // añade la configuración a la base de datos
             res => {
-              this.appsService.uploadModelFIles(this.configuration.id, this.json, this.bin).subscribe(
+              this.appsService.uploadAppFiles(this.configuration).subscribe( // crea la carpeta y añade los archivos de la aplicación
                 res => {
-                  this.errorMessage = "";
-                  this.closeModal.nativeElement.click();
-                  this.loading = false;
-                  this.router.navigate(['/edit'], { queryParams: { id: this.configuration.id } });
+                  this.appsService.uploadModelFIles(this.configuration.id, this.json, this.bin).subscribe(
+                    res => {
+                      this.errorMessage = "";
+                      this.closeModal.nativeElement.click();
+                      this.loading = false;
+                      this.router.navigate(['/edit'], { queryParams: { id: this.configuration.id } });
+                    },
+                    err => {
+                      this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de subir los modelos al servidor.";
+                      this.loading = false;
+                      console.log(err);
+                    }
+                  )
                 },
                 err => {
-                  this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de subir los modelos al servidor.";
+                  this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de crear el directorio: " + this.configuration.id;
                   this.loading = false;
                   console.log(err);
                 }
-              )
+              );
             },
             err => {
-              this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de crear el directorio: " + this.configuration.id;
+              this.errorMessage = "No se ha podido crear la aplicación, el id ya existe.";
               this.loading = false;
               console.log(err);
             }
           );
-        },
-        err => {
-          this.errorMessage = "No se ha podido crear la aplicación, el id ya existe.";
+        })
+        .catch(error => {
+          this.errorMessage = "El modelo seleccionado no es un modelo compatible con esta aplicación. Por favor, lee la <a href=\"/help\">ayuda</a> para más información.";
           this.loading = false;
-          console.log(err);
-        }
-      );
+          console.log(error);
+        });
     }
     else {
       this.errorMessage = "No se ha podido crear la aplicación. Por favor, revisa los campos del formulario.";
