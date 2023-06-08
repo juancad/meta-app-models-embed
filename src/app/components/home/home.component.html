@@ -12,17 +12,17 @@
 </nav>
 
 <div class="m-3">
-    <ng-container *ngIf="configurations.length > 0">
-        <app-preview [configAndChargeModel]="selectedConfig"></app-preview>
+    <ng-container *ngIf="selectedApp != null && getApps().length > 0">
+        <app-preview [applicationAndChargeModel]="selectedApp"></app-preview>
     </ng-container>
 
-    <div *ngIf="configurations.length == 0">
+    <div *ngIf="getApps().length == 0">
         No se ha creado ninguna aplicación. Pulsa en crear nueva aplicación para crear tu primera aplicación.
     </div>
 
     <div class="buttons">
         <button class="btn btn-warning" type="button" (click)="openEdit()"
-            *ngIf="configurations.length > 0 && selectedConfig!=null"><i class="bi bi-pencil-square"></i>
+            *ngIf="selectedApp != null && getApps().length > 0"><i class="bi bi-pencil-square"></i>
             Editar la aplicación</button>
         <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#modalCreate"><i
                 class="bi bi-plus-square"></i>
@@ -37,13 +37,12 @@
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">
-        <div class="list-group" *ngIf="configurations.length > 0">
-            <a *ngFor="let config of configurations.reverse()" [class.active]="config.id === getSelectedConfig().id"
-                (click)="setSelectedConfig(config)" class="list-group-item list-group-item-action">{{config.id}}
+        <div class="list-group" *ngIf="selectedApp != null && getApps().length > 0">
+            <a *ngFor="let config of selectedApp != null && getApps().reverse()" [class.active]="config.id === getSelectedApp().id"
+                (click)="setSelectedApp(config)" class="list-group-item list-group-item-action">{{config.id}}
                 <!-- Button trigger modal -->
                 <button type="button" class="btn btn-light btn-sm text-danger" data-bs-toggle="modal"
-                    data-bs-target="#modalDelete" onclick="event.stopPropagation()"
-                    (click)="setDeleteConfigId(config.id)">
+                    data-bs-target="#modalDelete" onclick="event.stopPropagation()" (click)="setDeleteAppId(config.id)">
                     <i class="bi bi-trash-fill"></i>
                 </button>
                 <button type="button" (click)="view(config.id)" class="btn btn-light btn-sm"

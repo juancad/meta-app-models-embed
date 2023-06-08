@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Configuration } from 'src/app/models/configuration.model';
+import { Application } from 'src/app/models/application.model';
 import { ActivatedRoute } from '@angular/router';
 import { Category } from 'src/app/models/category.model';
 import { AppsService } from 'src/app/services/apps.service';
@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
 })
 export class EditComponent implements OnInit {
   @Input() idConfig: string;
-  configuration: Configuration;
+  app: Application;
   loaded: boolean; //configuración cargada correctamente
   Align = Align;
   form: FormGroup;
@@ -84,12 +84,12 @@ export class EditComponent implements OnInit {
 
         this.appsService.getById(this.idConfig).subscribe(
           res => {
-            this.configuration = res;
+            this.app = res;
             this.loaded = true;
 
             this.form = this.fb.group({
               id: [
-                this.configuration.id,
+                this.app.id,
                 Validators.compose([
                   Validators.required,
                   Validators.maxLength(20),
@@ -97,7 +97,7 @@ export class EditComponent implements OnInit {
                 ]),
               ],
               title: [
-                this.configuration.title,
+                this.app.title,
                 Validators.compose([
                   Validators.required,
                   Validators.minLength(10),
@@ -105,7 +105,7 @@ export class EditComponent implements OnInit {
                 ]),
               ],
               description: [
-                this.configuration.description,
+                this.app.description,
                 Validators.compose([
                   Validators.maxLength(15000)
                 ]),
@@ -125,22 +125,22 @@ export class EditComponent implements OnInit {
   }
 
   addCategory() {
-    this.configuration.categories.push(new Category("Nombre categoría", null, null));
+    this.app.categories.push(new Category("Nombre categoría", null, null));
   }
 
   deleteCategory(category: Category) {
-    const index = this.configuration.categories.indexOf(category);
+    const index = this.app.categories.indexOf(category);
     if (index !== -1) {
-      this.configuration.categories.splice(index, 1);
+      this.app.categories.splice(index, 1);
     }
   }
 
   setTitle(newTitle: any) {
     if (!this.form.controls['title'].errors) {
       this.errorMessage = "";
-      this.configuration.title = newTitle;
+      this.app.title = newTitle;
 
-      this.configuration = Object.assign({}, this.configuration);
+      this.app = Object.assign({}, this.app);
     }
     else {
       if (this.form.controls['title'].errors['required'] || this.form.controls['title'].errors['minlength']) {
@@ -155,8 +155,8 @@ export class EditComponent implements OnInit {
   setDescription(newDescription: any) {
     if (!this.form.controls['description'].errors) {
       this.errorMessage = "";
-      this.configuration.description = newDescription;
-      this.configuration = Object.assign({}, this.configuration);
+      this.app.description = newDescription;
+      this.app = Object.assign({}, this.app);
     }
     else {
       if (this.form.controls['description'].errors['maxlength']) {
@@ -168,7 +168,7 @@ export class EditComponent implements OnInit {
   setId(id: string) {
     if (!this.form.controls['id'].errors) {
       this.errorMessage = "";
-      this.configuration.id = id;
+      this.app.id = id;
     }
     else {
       console.log(this.form.controls['id'].errors);
@@ -185,23 +185,23 @@ export class EditComponent implements OnInit {
   }
 
   setCamAlign(camAlign: Align) {
-    this.configuration.style.camAlign = camAlign;
+    this.app.style.camAlign = camAlign;
   }
 
   saveChanges() {
     if (this.form.valid) {
-      this.appsService.put(this.configuration, this.idConfig).subscribe(
+      this.appsService.put(this.app, this.idConfig).subscribe(
         res => {
-          this.appsService.uploadAppFiles(this.configuration).subscribe(
+          this.appsService.uploadAppFiles(this.app).subscribe(
             res => {
               this.saved = true;
               this.saveMessage = "Se han guardado correctamente los cambios en la aplicación.";
-              this.idConfig = this.configuration.id;
-              this.router.navigate(['/edit'], { queryParams: { id: this.configuration.id } });
+              this.idConfig = this.app.id;
+              this.router.navigate(['/edit'], { queryParams: { id: this.app.id } });
             },
             err => {
               this.saved = false;
-              this.saveMessage = "No se han podido actualizar los datos correctamente. Hubo un error a la hora de crear el directorio: " + this.configuration.id;
+              this.saveMessage = "No se han podido actualizar los datos correctamente. Hubo un error a la hora de crear el directorio: " + this.app.id;
               console.log(err);
             }
           );

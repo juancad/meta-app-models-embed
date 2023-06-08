@@ -1,7 +1,7 @@
 Vista previa de la aplicación:
 <hr/>
 <div style="padding: 10px;"
-    [ngStyle]="{'background-color': configuration.style.backgroundColor, 'font-family': configuration.style.font, 'color': configuration.style.textColor}">
+    [ngStyle]="{'background-color': app.style.backgroundColor, 'font-family': app.style.font, 'color': app.style.textColor}">
     <div [innerHTML]="HTMLTitle"></div>
     <br />
     <div [ngStyle]="{'text-align': getCamAlign()}">
@@ -11,7 +11,7 @@ Vista previa de la aplicación:
                 class="bi bi-arrow-repeat"></i></button>
 
         <h2>Resultado: {{category}}</h2>
-        <p *ngIf="configuration.style.showOutput">{{output}}</p>
+        <p *ngIf="app.style.showOutput">{{output}}</p>
     </div>
 
     <div [innerHTML]="HTMLDesc"></div>

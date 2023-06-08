@@ -1,8 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AppsService } from 'src/app/services/apps.service';
-import { Configuration } from 'src/app/models/configuration.model';
-import { Category } from 'src/app/models/category.model';
-import { Align, Style } from 'src/app/models/style.model';
+import { Application } from 'src/app/models/application.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,29 +8,23 @@ import { Router } from '@angular/router';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   title;
-  configurations: Configuration[];
-  selectedConfig: Configuration;
-  deleteConfigId: string;
-  configLoaded;
-
+  selectedApp: Application;
+  deleteAppId: string;
 
   constructor(private appsService: AppsService, private router: Router) {
     this.title = "meta-app-models";
-    this.configurations = [];
-    this.selectedConfig = null;
-    this.deleteConfigId = null;
+    this.deleteAppId = null;
+    this.selectedApp = null;
   }
 
-  ngOnInit() {
-    this.appsService.get().subscribe(
+  ngOnInit(): void {
+    this.appsService.login(this.appsService.user.username, this.appsService.user.password, true).subscribe(
       res => {
-        this.configurations = res;
-        if (this.configurations.length > 0) {
-          this.selectedConfig = structuredClone(this.configurations[this.configurations.length - 1]);
+        if (this.getApps().length > 0) {
+          this.selectedApp = this.getApps()[this.getApps().length - 1];
         }
-        console.log(this.configurations);
       },
       err => {
         console.error(err);
@@ -41,55 +33,24 @@ export class HomeComponent {
     );
   }
 
-  createDefaultConfig() {
-    const style = new Style(Align.center, 'Arial', "#FFFFFF", "#353535", true);
-    const categories = new Array<Category>;
-    categories.push(new Category("Perro", 0, 0.5));
-    categories.push(new Category("Gato", 0, 1));
-
-    this.appsService.post(new Configuration("default", "<h1 style='text-align: center'>Perros y gatos</h1>", "", style, categories, true)).subscribe(
-      res => {
-        location.reload(); // vuelve a cargar para actualizar la lista
-        console.log(res);
-      },
-      err => {
-        console.log(err);
-      }
-    )
+  getApps(): Array<Application> {
+    return this.appsService.user.apps;
   }
 
-  getSelectedConfig(): Configuration {
-    return this.selectedConfig;
+  getSelectedApp(): Application {
+    return this.selectedApp;
   }
 
-  setSelectedConfig(config: Configuration): void {
-    this.selectedConfig = structuredClone(config);
+  setSelectedApp(app: Application): void {
+    this.selectedApp = app;
   }
 
-  setDeleteConfigId(id: string) {
-    this.deleteConfigId = id;
-  }
-
-  readConfig() {
-    this.appsService.get().subscribe(
-      res => {
-        this.configurations = res;
-        if (this.configurations.length > 0) {
-          this.selectedConfig = structuredClone(this.configurations[this.configurations.length - 1]);
-        }
-        else {
-          this.createDefaultConfig();
-          this.selectedConfig = structuredClone(this.configurations[this.configurations.length - 1]);
-        }
-      },
-      err => {
-        console.error(err);
-      }
-    );
+  setDeleteAppId(id: string) {
+    this.deleteAppId = id;
   }
 
   onDelete() {
-    this.appsService.delete(this.deleteConfigId).subscribe(
+    this.appsService.delete(this.deleteAppId).subscribe(
       res => {
         location.reload(); // vuelve a cargar para actualizar la lista
       },
@@ -108,6 +69,6 @@ export class HomeComponent {
   }
 
   openEdit() {
-    this.router.navigate(['/edit'], { queryParams: { id: this.selectedConfig.id } });
+    this.router.navigate(['/edit'], { queryParams: { id: this.selectedApp.id } });
   }
 }

@@ -30,7 +30,7 @@
                     aria-labelledby="pills-titulo-tab">
                     <!--Título-->
                     <form [formGroup]="form">
-                        Anterior id: {{configuration.id}}<br />
+                        Anterior id: {{app.id}}<br />
                         <div class="input-group id">
                             <span class="input-group-text" id="inputGroup-sizing-default">Id de la aplicación</span>
                             <input #id (ngModelChange)="setId(id.value)" type="text" formControlName="id"
@@ -64,19 +64,19 @@
                     <!--CATEGORÍAS-->
                     <div class="form-check form-switch py-1">
                         <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckRange"
-                            [(ngModel)]="configuration.useRange">
+                            [(ngModel)]="app.useRange">
                         <label class="form-check-label" for="flexSwitchCheckRange">Utilizar rango de
                             valores</label>
                     </div>
                     <ul class="list-group">
-                        <li class="list-group-item" *ngFor="let categorie of configuration.categories; index as i;">
+                        <li class="list-group-item" *ngFor="let categorie of app.categories; index as i;">
                             <div class="row g-3">
                                 <div class="input-group input-group-sm col title">
                                     <span class="input-group-text" maxlength="100">Nombre de la categoría
                                         {{i}}:</span>
                                     <input [(ngModel)]="categorie.name" type="text" class="form-control">
                                 </div>
-                                <div *ngIf="configuration.useRange" class="input-group input-group-sm col range">
+                                <div *ngIf="app.useRange" class="input-group input-group-sm col range">
                                     <span class="input-group-text">Rango de valores:</span>
                                     <span class="input-group-text">&#62;</span>
                                     <input [(ngModel)]="categorie.minVal" type=number step="0.1" class="form-control">
@@ -99,26 +99,26 @@
                     <!--ESTILO-->
                     <div class="form-check form-switch py-1">
                         <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckNumeric"
-                            [(ngModel)]="configuration.style.showOutput">
+                            [(ngModel)]="app.style.showOutput">
                         <label class="form-check-label" for="flexSwitchCheckNumeric">Mostrar resultado numérico</label>
                     </div>
 
                     Selecciona la alineación de la cámara:&nbsp;&nbsp;
                     <div class="btn-group btn-group-toggle">
-                        <button class="btn btn-secondary" [class.active]="configuration.style.camAlign === Align.left"
+                        <button class="btn btn-secondary" [class.active]="app.style.camAlign === Align.left"
                             (click)="setCamAlign(Align.left)"><i class="bi bi-text-left"></i></button>
-                        <button class="btn btn-secondary" [class.active]="configuration.style.camAlign === Align.center"
+                        <button class="btn btn-secondary" [class.active]="app.style.camAlign === Align.center"
                             (click)="setCamAlign(Align.center)"><i class="bi bi-text-center"></i></button>
-                        <button class="btn btn-secondary" [class.active]="configuration.style.camAlign === Align.right"
+                        <button class="btn btn-secondary" [class.active]="app.style.camAlign === Align.right"
                             (click)="setCamAlign(Align.right)"><i class="bi bi-text-right"></i></button>
                     </div>
                     <br /> <br />
                     <div class="row g-3">
                         <div class="input-group input-group-sm col-sm font">
                             <span class="input-group-text">Selecciona la fuente del texto:</span>
-                            <select class="form-select form-select-sm" [(ngModel)]="configuration.style.font">
+                            <select class="form-select form-select-sm" [(ngModel)]="app.style.font">
                                 <option *ngFor="let font of fontList"
-                                    [selected]="font.name === configuration.style.font">{{
+                                    [selected]="font.name === app.style.font">{{
                                     font.name }}
                                 </option>
                             </select>
@@ -126,16 +126,16 @@
                         <div class="input-group input-group-sm col-sm bgcolor">
                             <span class="input-group-text">Selecciona el color de fondo:</span>
                             <input readonly class="colorPicker" [cpToggle]="false"
-                                [value]="configuration.style.backgroundColor"
-                                [style.background]="configuration.style.backgroundColor" [cpPosition]="'right'"
-                                [(colorPicker)]="configuration.style.backgroundColor" />
+                                [value]="app.style.backgroundColor"
+                                [style.background]="app.style.backgroundColor" [cpPosition]="'right'"
+                                [(colorPicker)]="app.style.backgroundColor" />
                         </div>
                         <div class="input-group input-group-sm col-sm color">
                             <span class="input-group-text">Selecciona el color por defecto del texto:</span>
                             <input readonly class="colorPicker" [cpToggle]="false"
-                                [value]="configuration.style.textColor"
-                                [style.background]="configuration.style.textColor" [cpPosition]="'right'"
-                                [(colorPicker)]="configuration.style.textColor" />
+                                [value]="app.style.textColor"
+                                [style.background]="app.style.textColor" [cpPosition]="'right'"
+                                [(colorPicker)]="app.style.textColor" />
                         </div>
                     </div>
                 </div>
@@ -184,7 +184,7 @@
     </div>
 
     <div class="m-3">
-        <app-preview [config]="configuration"></app-preview>
+        <app-preview [application]="app"></app-preview>
     </div>
 </div>
 <app-footer></app-footer>

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import * as tf from '@tensorflow/tfjs';
-import { Configuration } from 'src/app/models/configuration.model';
+import { Application } from 'src/app/models/application.model';
 import { Align } from 'src/app/models/style.model';
 import { Router } from '@angular/router'
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -12,7 +12,7 @@ import { AppsService } from 'src/app/services/apps.service';
   styleUrls: ['./preview.component.scss']
 })
 export class PreviewComponent implements OnInit, OnChanges {
-  configuration: Configuration;
+  app: Application;
   HTMLTitle: SafeHtml;
   HTMLDesc: SafeHtml;
   model: any;
@@ -37,13 +37,15 @@ export class PreviewComponent implements OnInit, OnChanges {
   }
 
   @Input()
-  set config(value: Configuration) {
-    this.configuration = value;
+  set application(value: Application) {
+    this.app = value;
+    console.log(value);
   }
 
   @Input()
-  set configAndChargeModel(value: Configuration) {
-    this.configuration = value;
+  set applicationAndChargeModel(value: Application) {
+    this.app = value;
+    console.log(value);
     this.ngOnInit();
   }
 
@@ -53,7 +55,7 @@ export class PreviewComponent implements OnInit, OnChanges {
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
     console.log("Cargando modelo...");
-    const url = this.appsService.baseUrl + "/apps/" + this.configuration.id + "/assets/model.json";
+    const url = this.appsService.baseUrl + "/apps/" + this.appsService.user.username + "/" + this.app.id + "/model/model.json";
     this.category = "Cargando...";
 
     tf.loadLayersModel(url)
@@ -75,8 +77,8 @@ export class PreviewComponent implements OnInit, OnChanges {
    * Cada vez que cambie los valores del @input se ejecuta este método
    */
   ngOnChanges(changes: SimpleChanges) {
-    this.HTMLTitle = this.sanitizer.bypassSecurityTrustHtml(this.configuration.title);
-    this.HTMLDesc = this.sanitizer.bypassSecurityTrustHtml(this.configuration.description);
+    this.HTMLTitle = this.sanitizer.bypassSecurityTrustHtml(this.app.title);
+    this.HTMLDesc = this.sanitizer.bypassSecurityTrustHtml(this.app.description);
   }
 
   showCam() {
@@ -148,8 +150,8 @@ export class PreviewComponent implements OnInit, OnChanges {
       });
 
       //si el modelo utiliza el rango, se mostrará la categoría dependiendo del rango
-      if (this.configuration.useRange && this.configuration.categories.length > 0) {
-        for (const categorie of this.configuration.categories) {
+      if (this.app.useRange && this.app.categories.length > 0) {
+        for (const categorie of this.app.categories) {
           if (this.output >= categorie.minVal && this.output < categorie.maxVal) {
             this.category = categorie.name;
           }
@@ -158,8 +160,8 @@ export class PreviewComponent implements OnInit, OnChanges {
       //si el modelo no utiliza el rango, se mostrará la categoría dependiendo del índice
       else {
         const index = tf.argMax(this.output).dataSync()[0];
-        if (this.configuration.categories.length > index) {
-          this.category = this.configuration.categories[index].name;
+        if (this.app.categories.length > index) {
+          this.category = this.app.categories[index].name;
         }
         else {
           this.category = index.toString();
@@ -199,6 +201,6 @@ export class PreviewComponent implements OnInit, OnChanges {
   }
 
   getCamAlign(): string {
-    return Align[this.configuration.style.camAlign];
+    return Align[this.app.style.camAlign];
   }
 }

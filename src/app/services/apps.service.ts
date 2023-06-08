@@ -1,35 +1,71 @@
 import { Injectable } from '@angular/core';
-import { Configuration } from '../models/configuration.model';
+import { Application } from '../models/application.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { User } from '../models/user.model';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppsService {
   baseUrl: string;
+  user: User;
+  private loggedInKey = 'loggedInUser';
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     this.baseUrl = "http://localhost/meta-app-models";
+    const storedUser = localStorage.getItem(this.loggedInKey);
+    this.user = storedUser ? JSON.parse(storedUser) : null;
   }
 
-  get(): Observable<Configuration[]> {
-    return this.http.get<Configuration[]>(this.baseUrl + "/config/get.php");
+  login(id: string, password: string, loginByUsername: boolean): Observable<boolean> {
+    let url = this.baseUrl;
+    const body = { id: id, password: password };
+
+    if (loginByUsername) {
+      url += "/config/getByUsername.php";
+    }
+    else {
+      url += "/config/getByEmail.php";
+    }
+
+    return new Observable<boolean>(observer => {
+      this.http.post<User>(url, body).subscribe(
+        res => {
+          this.user = res;
+          // Almacenar los datos del usuario en el localStorage
+          localStorage.setItem(this.loggedInKey, JSON.stringify(this.user));
+          observer.next(true);
+          observer.complete();
+        },
+        err => {
+          console.log(err);
+          observer.next(false);
+          observer.complete();
+        }
+      )
+    });
   }
 
-  getById(id: string): Observable<Configuration> {
-    return this.http.get<Configuration>(this.baseUrl + "/config/getById.php?id=" + id);
+  logout(): void {
+    this.user = null;
+    localStorage.removeItem(this.loggedInKey);
   }
 
-  post(config: Configuration) {
-    return this.http.post(this.baseUrl + "/config/post.php", JSON.stringify(config));
+  getById(id: string): Observable<Application> {
+    return this.http.get<Application>(this.baseUrl + "/config/getById.php?id=" + id + "&username=" + this.user.username);
   }
 
-  put(config: Configuration, oldid: string) {
+  post(app: Application) {
+    return this.http.post(this.baseUrl + "/config/post.php", JSON.stringify(app));
+  }
+
+  put(config: Application, oldid: string) {
     return this.http.put(this.baseUrl + "/config/put.php?oldid=" + oldid, JSON.stringify(config));
   }
 
-  uploadAppFiles(config: Configuration) {
+  uploadAppFiles(config: Application) {
     const html = this.createHTML(config);
     const css = this.createCSS(config);
     const js = this.createJS(config);
@@ -40,7 +76,7 @@ export class AppsService {
     formData.append('cssFile', css, css.name);
     formData.append('jsFile', js, js.name);
 
-    return this.http.post(this.baseUrl + "/config/uploadAppFiles.php?id=" + config.id, formData, { headers });
+    return this.http.post(this.baseUrl + "/config/uploadAppFiles.php?id=" + config.id + "&username=" + this.user.username, formData, { headers });
   }
 
   uploadModelFIles(id: string, json: File, bin: FileList) {
@@ -51,17 +87,17 @@ export class AppsService {
       formData.append('bin[]', bin[i], bin[i].name);
     }
 
-    return this.http.post(this.baseUrl + "/config/uploadModelFiles.php?id=" + id, formData);
+    return this.http.post(this.baseUrl + "/config/uploadModelFiles.php?id=" + id + "&username=" + this.user.username, formData);
   }
 
   delete(id: string) {
-    return this.http.delete(this.baseUrl + "/config/delete.php?id=" + id);
+    return this.http.delete(this.baseUrl + "/config/delete.php?id=" + id + "&username=" + this.user.username);
   }
 
   getFolder(id: string) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const options = { headers: headers, responseType: 'blob' as 'json' };
-    const rutaDirectorio = "../apps/" + id;
+    const rutaDirectorio = "../apps/" + this.user.username + "/" + id;
     const rutaCodificada = encodeURIComponent(rutaDirectorio);
 
     this.http.get(this.baseUrl + `/config/download.php?ruta=${rutaCodificada}`, options)
@@ -74,12 +110,12 @@ export class AppsService {
         anchor.click();
       });
   }
-  
+
   view(id: string) {
-    window.open(`${this.baseUrl}/apps/${id}/index.html`, "_blank");
+    window.open(`${this.baseUrl}/apps/${this.user.username}/${id}/index.html`, "_blank");
   }
 
-  createHTML(config: Configuration): File {
+  createHTML(config: Application): File {
     const HTMLContent = "<!DOCTYPE html>\n" +
       "<html>\n" +
       "\t<head>\n" +
@@ -98,7 +134,7 @@ export class AppsService {
     return html;
   }
 
-  createCSS(config: Configuration): File {
+  createCSS(config: Application): File {
     const CSSContent = "body {\n" +
       "\tbackground-color: " + config.style.backgroundColor + ";\n" +
       "\tfont-family: " + config.style.font + ";\n" +
@@ -111,7 +147,7 @@ export class AppsService {
     return css;
   }
 
-  createJS(config: Configuration): File {
+  createJS(config: Application): File {
     const JSContent = "";
 
     const blob = new Blob([JSContent], { type: 'text/javascript' });
