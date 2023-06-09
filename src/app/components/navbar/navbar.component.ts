@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { AppsService } from 'src/app/services/apps.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -8,7 +10,16 @@ import { Component, Input } from '@angular/core';
 export class NavbarComponent {
   title: String;
 
-  constructor() {
+  constructor(private appsService: AppsService, private router: Router) {
     this.title = "Incrustado de modelos";
+  }
+
+  getUsername(): string {
+    return this.appsService.user.username;
+  }
+  
+  logout() {
+    this.appsService.logout();
+    this.router.navigate(['']);
   }
 }

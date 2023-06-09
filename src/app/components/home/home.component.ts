@@ -41,6 +41,10 @@ export class HomeComponent implements OnInit {
     return this.selectedApp;
   }
 
+  getUsername(): string {
+    return this.appsService.user.username;
+  }
+
   setSelectedApp(app: Application): void {
     this.selectedApp = app;
   }
@@ -70,5 +74,10 @@ export class HomeComponent implements OnInit {
 
   openEdit() {
     this.router.navigate(['/edit'], { queryParams: { id: this.selectedApp.id } });
+  }
+
+  logout() {
+    this.appsService.logout();
+    this.router.navigate(['']);
   }
 }
