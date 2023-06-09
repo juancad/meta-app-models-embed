@@ -19,11 +19,11 @@ export class AppsService {
     this.user = storedUser ? JSON.parse(storedUser) : null;
   }
 
-  login(id: string, password: string, loginByUsername: boolean): Observable<boolean> {
+  login(id: string, password: string, type: boolean): Observable<boolean> {
     let url = this.baseUrl;
     const body = { id: id, password: password };
 
-    if (loginByUsername) {
+    if (type) {
       url += "/config/getByUsername.php";
     }
     else {

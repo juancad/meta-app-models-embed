@@ -23,7 +23,7 @@ export class EditComponent implements OnInit {
   editorTitle: Editor;
   editorDesc: Editor;
   toolbar: Toolbar;
-  colorPresets;
+  colorPresets: Array<string>;
   fontList: { name: string; value: string; }[];
   saveMessage: string;
   saved: boolean; // se han guardado los cambios o no

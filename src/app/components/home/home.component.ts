@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  title;
+  title: string;
   selectedApp: Application;
   deleteAppId: string;
 
