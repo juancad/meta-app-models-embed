@@ -20,10 +20,10 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.appsService.login(this.appsService.user.username, this.appsService.user.password, true).subscribe(
+    this.appsService.loadUser().subscribe(
       res => {
-        if (this.getApps().length > 0) {
-          this.selectedApp = this.getApps()[this.getApps().length - 1];
+        if (res.apps.length > 0) {
+          this.selectedApp = res.apps[res.apps.length - 1];
         }
       },
       err => {

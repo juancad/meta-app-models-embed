@@ -48,6 +48,27 @@ export class AppsService {
     });
   }
 
+  loadUser(): Observable<User> {
+    const body = { id: this.user.username, password: this.user.password };
+
+    return new Observable<User>(observer => {
+      this.http.post<User>(this.baseUrl + "/config/getByUsername.php", body).subscribe(
+        res => {
+          this.user = res;
+          // Almacenar los datos del usuario en el localStorage
+          localStorage.setItem(this.loggedInKey, JSON.stringify(this.user));
+          observer.next(res);
+          observer.complete();
+        },
+        err => {
+          console.log(err);
+          observer.next(err);
+          observer.complete();
+        }
+      )
+    });
+  }
+
   logout(): void {
     this.user = null;
     localStorage.removeItem(this.loggedInKey);
@@ -58,11 +79,11 @@ export class AppsService {
   }
 
   post(app: Application) {
-    return this.http.post(this.baseUrl + "/config/post.php", JSON.stringify(app));
+    return this.http.post(this.baseUrl + "/config/post.php?username=" + this.user.username, JSON.stringify(app));
   }
 
   put(config: Application, oldid: string) {
-    return this.http.put(this.baseUrl + "/config/put.php?oldid=" + oldid, JSON.stringify(config));
+    return this.http.put(this.baseUrl + "/config/put.php?oldid=" + oldid + "&username=" + this.user.username, JSON.stringify(config));
   }
 
   uploadAppFiles(config: Application) {
@@ -97,7 +118,7 @@ export class AppsService {
   getFolder(id: string) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const options = { headers: headers, responseType: 'blob' as 'json' };
-    const rutaDirectorio = "../apps/" + this.user.username + "/" + id;
+    const rutaDirectorio = "../users/" + this.user.username + "/" + id;
     const rutaCodificada = encodeURIComponent(rutaDirectorio);
 
     this.http.get(this.baseUrl + `/config/download.php?ruta=${rutaCodificada}`, options)
@@ -112,7 +133,7 @@ export class AppsService {
   }
 
   view(id: string) {
-    window.open(`${this.baseUrl}/apps/${this.user.username}/${id}/index.html`, "_blank");
+    window.open(`${this.baseUrl}/users/${this.user.username}/${id}/index.html`, "_blank");
   }
 
   createHTML(config: Application): File {

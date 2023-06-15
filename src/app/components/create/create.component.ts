@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Category } from 'src/app/models/category.model';
 import { Application } from 'src/app/models/application.model';
 import { Align, Style } from 'src/app/models/style.model';
 import { AppsService } from 'src/app/services/apps.service';
@@ -27,7 +26,7 @@ export class CreateComponent {
   loading: boolean;
 
   constructor(private fb: FormBuilder, private appsService: AppsService, private router: Router) {
-    this.app = new Application("", "<h1 style='text-align: center'>Titulo de la aplicación</h1>", "", new Style(Align.center, 'Arial', "#FFFFFF", "#353535", true), new Array<Category>, false, this.appsService.user.username);
+    this.app = new Application("", "<h1 style='text-align: center'>Titulo de la aplicación</h1>", "", new Style(Align.center, 'Arial', "#FFFFFF", "#353535", true), false);
     this.idMessage = "El identificador no puede estar vacío.";
     this.jsonMessage = "Debes seleccionar un archivo en formato \".json\"";
     this.jsonFormat = false;

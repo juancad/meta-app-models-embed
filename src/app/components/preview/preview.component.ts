@@ -55,7 +55,7 @@ export class PreviewComponent implements OnInit, OnChanges {
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
     console.log("Cargando modelo...");
-    const url = this.appsService.baseUrl + "/apps/" + this.appsService.user.username + "/" + this.app.id + "/model/model.json";
+    const url = this.appsService.baseUrl + "/users/" + this.appsService.user.username + "/" + this.app.id + "/model/model.json";
     this.category = "Cargando...";
 
     tf.loadLayersModel(url)

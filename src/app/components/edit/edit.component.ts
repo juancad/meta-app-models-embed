@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./edit.component.scss']
 })
 export class EditComponent implements OnInit {
-  @Input() idConfig: string;
+  @Input() appId: string;
   app: Application;
   loaded: boolean; //configuración cargada correctamente
   Align = Align;
@@ -80,9 +80,9 @@ export class EditComponent implements OnInit {
 
     this.route.queryParams.subscribe(
       res => {
-        this.idConfig = res['id'];
+        this.appId = res['id'];
 
-        this.appsService.getById(this.idConfig).subscribe(
+        this.appsService.getById(this.appId).subscribe(
           res => {
             this.app = res;
             this.loaded = true;
@@ -190,13 +190,13 @@ export class EditComponent implements OnInit {
 
   saveChanges() {
     if (this.form.valid) {
-      this.appsService.put(this.app, this.idConfig).subscribe(
+      this.appsService.put(this.app, this.appId).subscribe(
         res => {
           this.appsService.uploadAppFiles(this.app).subscribe(
             res => {
               this.saved = true;
               this.saveMessage = "Se han guardado correctamente los cambios en la aplicación.";
-              this.idConfig = this.app.id;
+              this.appId = this.app.id;
               this.router.navigate(['/edit'], { queryParams: { id: this.app.id } });
             },
             err => {
