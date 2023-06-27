@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
           }
         },
         err => {
-          this.message = "Ha habido un problema al intentar conectar con el servidor para poder iniciar sesión.";
+          this.message = "Ha habido un problema al intentar conectar con el servidor para poder iniciar sesión. Inténtelo de nuevo más tarde.";
         });
     }
     else {

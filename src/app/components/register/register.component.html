@@ -1,0 +1,92 @@
+<app-navbar></app-navbar>
+
+<div class="card">
+    <h5 class="card-header">Formulario de registro</h5>
+    <div class="card-body">
+        <p class="card-text">Introduce los siguientes datos para poderte registrar en la aplicación.</p>
+        <form [formGroup]="form">
+            <div class="form-group">
+                <label for="username">Nombre de usuario *</label>
+                <input type="text" formControlName="username" class="form-control"
+                    placeholder="introduce tu nombre de usuario" autocomplete="username">
+            </div>
+            <p *ngIf="form.get('username').hasError('minlength')" class="text-danger"> El nombre de usuario debe tener
+                al menos 4 caracteres.</p>
+            <p *ngIf="form.get('username').hasError('maxlength')" class="text-danger"> El nombre de usuario no puede
+                superar los 20 caracteres.</p>
+            <p *ngIf="form.get('username').hasError('pattern')" class="text-danger"> El nombre de usuario sólo puede
+                contener caracteres alfanuméricos, punto, guión bajo y/o guión.</p>
+            <br />
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="text" formControlName="email" class="form-control" placeholder="introduce tu email"
+                    autocomplete="email">
+            </div>
+            <p *ngIf="form.get('email').hasError('pattern')" class="text-danger">Email no válido.</p>
+            <p *ngIf="form.get('email').hasError('maxlength')" class="text-danger">Email demasiado grande.</p>
+
+            <br />
+            <div class="form-group">
+                <label for="exampleInputPassword1">Contraseña *</label>
+                <input type="password" formControlName="password" class="form-control"
+                    placeholder="Introduce tu contraseña" autocomplete="password">
+            </div>
+            <p *ngIf="form.get('password').hasError('minlength')" class="text-danger">La contraseña debe tener un mínimo
+                de 6 caracteres.</p>
+            <p *ngIf="form.get('password').hasError('maxlength')" class="text-danger">Contraseña demasiado grande.</p>
+
+            <div class="form-group">
+                <label for="exampleInputPassword1">Repite la contraseña *</label>
+                <input type="password" formControlName="rpassword" class="form-control"
+                    placeholder="Repite la contraseña">
+            </div>
+            <div class="form-group form-check">
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="checkbox" value="" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    He leído y acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        política de privacidad y cookies
+                    </a>
+                </label>
+            </div>
+            <br />
+            <button [disabled]="!form.valid" type="submit" class="btn btn-primary"
+                (click)="register()">Registrarse</button>
+        </form>
+        <br />
+        <div *ngIf="message!=''" class="alert alert-danger" role="alert">
+            {{message}}
+        </div>
+    </div>
+</div>
+
+<!-- Política de privadicad -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Política de privacidad y cookies</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4>¿Qué datos recoge la aplicación sobre mí?</h4>
+                Se recogen los datos proporcionados al registrate en la aplicación, que son aquellos que aparecen en el formulario de registro (nombre de usuario y correo electrónico).
+                También se recogen las aplicaciones creadas en la meta-aplicación, almacenándolas en el servidor junto con el modelo subido y los datos proporcionados en el editor de aplicaciones.
+                <br/><br/>
+                <h4>¿Cómo puedo controlar mis datos?</h4>
+                Puedes acceder en todo momento a tus datos, eliminarlos y/o cambiar tu configuración. Cuando inicies sesión dispones de un editor de perfil, donde se muestran los datos de tu perfil recogidos y donde puedes modificarlos y/o eliminarlos si lo deseas. A la hora de pulsar en el botón "eliminar cuenta", se eliminarán todos los datos del usuario existentes en la base de datos de la aplicación.
+                <br/><br/>
+                <h4>¿Qué son las cookies?</h4>
+                Las cookies son pequeños archivos de texto que se almacenan en el navegador de un usuario cuando visita un sitio web. Estos archivos contienen información que el sitio web puede utilizar para recordar ciertos datos y preferencias del usuario, lo que permite una experiencia más personalizada y eficiente.
+                <br/><br/>
+                <h4>¿Para qué se utilizan las cookies en la aplicación?</h4>
+                En la aplicación se utilizan únicamente las cookies para mantener la sesión del usuario abierta en el navegador. Puedes cerrar la sesión siempre desde el botón "cerrar sesión", que eliminará las cookies guardadas.
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="register">¿Ya te has registrado? <a href="/login">Iniciar sesión.</a></p>
+
+<app-footer></app-footer>

@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.appsService.loadUser().subscribe(
+    this.appsService.getUser().subscribe(
       res => {
         if (res.apps.length > 0) {
           this.selectedApp = res.apps[res.apps.length - 1];
@@ -54,7 +54,7 @@ export class HomeComponent implements OnInit {
   }
 
   onDelete() {
-    this.appsService.delete(this.deleteAppId).subscribe(
+    this.appsService.deleteApp(this.deleteAppId).subscribe(
       res => {
         location.reload(); // vuelve a cargar para actualizar la lista
       },
@@ -65,7 +65,7 @@ export class HomeComponent implements OnInit {
   }
 
   download(id: string) {
-    this.appsService.getFolder(id);
+    this.appsService.downloadApp(id);
   }
 
   view(id: string) {

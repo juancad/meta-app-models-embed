@@ -115,13 +115,13 @@ export class CreateComponent {
 
       tf.loadLayersModel(modelIOHandler)
         .then(model => {
-          this.post();
+          this.postApp();
         })
         .catch(error => {
           console.log(error);
           tf.loadGraphModel(modelIOHandler)
             .then(model => {
-              this.post();
+              this.postApp();
             })
             .catch(error => {
               console.log(error);
@@ -135,8 +135,8 @@ export class CreateComponent {
     }
   }
 
-  post() {
-    this.appsService.post(this.app).subscribe( // añade la configuración a la base de datos
+  postApp() {
+    this.appsService.postApp(this.app).subscribe( // añade la configuración a la base de datos
       res => {
         this.appsService.uploadAppFiles(this.app).subscribe( // crea la carpeta y añade los archivos de la aplicación
           res => {

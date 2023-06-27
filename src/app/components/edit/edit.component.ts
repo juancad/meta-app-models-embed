@@ -82,7 +82,7 @@ export class EditComponent implements OnInit {
       res => {
         this.appId = res['id'];
 
-        this.appsService.getById(this.appId).subscribe(
+        this.appsService.getAppById(this.appId).subscribe(
           res => {
             this.app = res;
             this.loaded = true;
@@ -190,7 +190,7 @@ export class EditComponent implements OnInit {
 
   saveChanges() {
     if (this.form.valid) {
-      this.appsService.put(this.app, this.appId).subscribe(
+      this.appsService.putApp(this.app, this.appId).subscribe(
         res => {
           this.appsService.uploadAppFiles(this.app).subscribe(
             res => {

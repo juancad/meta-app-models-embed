@@ -5,11 +5,13 @@ import { EditComponent } from './components/edit/edit.component';
 import { HomeComponent } from './components/home/home.component';
 import { Error404Component } from './components/error404/error404.component';
 import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
 import { AppComponent } from './app.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', component: AppComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'home', component: HomeComponent },
   { path: 'edit', component: EditComponent },
   { path: 'help', component: HelpComponent },

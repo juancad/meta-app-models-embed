@@ -24,10 +24,10 @@ export class AppsService {
     const body = { id: id, password: password };
 
     if (type) {
-      url += "/config/getByUsername.php";
+      url += "/controller/getByUsername.php";
     }
     else {
-      url += "/config/getByEmail.php";
+      url += "/controller/getByEmail.php";
     }
 
     return new Observable<boolean>(observer => {
@@ -48,11 +48,13 @@ export class AppsService {
     });
   }
 
-  loadUser(): Observable<User> {
-    const body = { id: this.user.username, password: this.user.password };
+  register(user: User) {
+    return this.http.post<User>(this.baseUrl + "/controller/postUser.php", JSON.stringify(user));
+  }
 
+  getUser(): Observable<User> {
     return new Observable<User>(observer => {
-      this.http.post<User>(this.baseUrl + "/config/getByUsername.php", body).subscribe(
+      this.http.get<User>(this.baseUrl + "/controller/getUser.php?username=" + this.user.username).subscribe(
         res => {
           this.user = res;
           // Almacenar los datos del usuario en el localStorage
@@ -64,6 +66,7 @@ export class AppsService {
           console.log(err);
           observer.next(err);
           observer.complete();
+          this.router.navigate(['/404']);
         }
       )
     });
@@ -74,22 +77,26 @@ export class AppsService {
     localStorage.removeItem(this.loggedInKey);
   }
 
-  getById(id: string): Observable<Application> {
-    return this.http.get<Application>(this.baseUrl + "/config/getById.php?id=" + id + "&username=" + this.user.username);
+  getAppById(id: string): Observable<Application> {
+    return this.http.get<Application>(this.baseUrl + "/controller/getAppById.php?id=" + id + "&username=" + this.user.username);
   }
 
-  post(app: Application) {
-    return this.http.post(this.baseUrl + "/config/post.php?username=" + this.user.username, JSON.stringify(app));
+  postApp(app: Application) {
+    return this.http.post(this.baseUrl + "/controller/postApp.php?username=" + this.user.username, JSON.stringify(app));
   }
 
-  put(config: Application, oldid: string) {
-    return this.http.put(this.baseUrl + "/config/put.php?oldid=" + oldid + "&username=" + this.user.username, JSON.stringify(config));
+  putApp(app: Application, oldid: string) {
+    return this.http.put(this.baseUrl + "/controller/putApp.php?oldid=" + oldid + "&username=" + this.user.username, JSON.stringify(app));
   }
 
-  uploadAppFiles(config: Application) {
-    const html = this.createHTML(config);
-    const css = this.createCSS(config);
-    const js = this.createJS(config);
+  deleteApp(id: string) {
+    return this.http.delete(this.baseUrl + "/controller/deleteApp.php?id=" + id + "&username=" + this.user.username);
+  }
+
+  uploadAppFiles(app: Application) {
+    const html = this.createHTML(app);
+    const css = this.createCSS(app);
+    const js = this.createJS(app);
     const formData = new FormData();
     const headers = new HttpHeaders();
 
@@ -97,7 +104,7 @@ export class AppsService {
     formData.append('cssFile', css, css.name);
     formData.append('jsFile', js, js.name);
 
-    return this.http.post(this.baseUrl + "/config/uploadAppFiles.php?id=" + config.id + "&username=" + this.user.username, formData, { headers });
+    return this.http.post(this.baseUrl + "/controller/uploadAppFiles.php?id=" + app.id + "&username=" + this.user.username, formData, { headers });
   }
 
   uploadModelFIles(id: string, json: File, bin: FileList) {
@@ -108,20 +115,16 @@ export class AppsService {
       formData.append('bin[]', bin[i], bin[i].name);
     }
 
-    return this.http.post(this.baseUrl + "/config/uploadModelFiles.php?id=" + id + "&username=" + this.user.username, formData);
+    return this.http.post(this.baseUrl + "/controller/uploadModelFiles.php?id=" + id + "&username=" + this.user.username, formData);
   }
 
-  delete(id: string) {
-    return this.http.delete(this.baseUrl + "/config/delete.php?id=" + id + "&username=" + this.user.username);
-  }
-
-  getFolder(id: string) {
+  downloadApp(id: string) {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const options = { headers: headers, responseType: 'blob' as 'json' };
     const rutaDirectorio = "../users/" + this.user.username + "/" + id;
     const rutaCodificada = encodeURIComponent(rutaDirectorio);
 
-    this.http.get(this.baseUrl + `/config/download.php?ruta=${rutaCodificada}`, options)
+    this.http.get(this.baseUrl + `/controller/downloadApp.php?ruta=${rutaCodificada}`, options)
       .subscribe((response: any) => {
         const blob = new Blob([response], { type: 'application/zip' });
         const url = window.URL.createObjectURL(blob);
