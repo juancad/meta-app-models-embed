@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AppsService } from 'src/app/services/apps.service';
 import { Application } from 'src/app/models/application.model';
 import { Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   title: string;
   selectedApp: Application;
   deleteAppId: string;
@@ -17,20 +17,12 @@ export class HomeComponent implements OnInit {
     this.title = "meta-app-models";
     this.deleteAppId = null;
     this.selectedApp = null;
-  }
 
-  ngOnInit(): void {
-    this.appsService.getUser().subscribe(
-      res => {
-        if (res.apps.length > 0) {
-          this.selectedApp = res.apps[res.apps.length - 1];
-        }
-      },
-      err => {
-        console.error(err);
-        this.router.navigate(['/404']);
-      }
-    );
+    if (this.appsService.user == null) {
+      this.router.navigate(['']);
+    }
+
+    this.selectedApp = appsService.user.apps[appsService.user.apps.length - 1];
   }
 
   getApps(): Array<Application> {
@@ -56,7 +48,20 @@ export class HomeComponent implements OnInit {
   onDelete() {
     this.appsService.deleteApp(this.deleteAppId).subscribe(
       res => {
-        location.reload(); // vuelve a cargar para actualizar la lista
+        this.appsService.getUser().subscribe(
+          res => {
+            this.appsService.user = res;
+            this.appsService.saveCoockies();
+            if (res.apps.length > 0) {
+              this.selectedApp = res.apps[res.apps.length - 1];
+            }
+          },
+          err => {
+            console.log(err);
+            this.appsService.logout();
+            this.router.navigate(['']);
+          }
+        );
       },
       err => {
         console.error(err);
@@ -74,6 +79,10 @@ export class HomeComponent implements OnInit {
 
   openEdit() {
     this.router.navigate(['/edit'], { queryParams: { id: this.selectedApp.id } });
+  }
+
+  editProfile() {
+    this.router.navigate(['/profile']);
   }
 
   logout() {

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AppsService } from 'src/app/services/apps.service';
 import { Router } from '@angular/router';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { User } from 'src/app/models/user.model';
 
 @Component({
@@ -31,31 +31,29 @@ export class RegisterComponent {
     const email = this.form.value.email;
     const password = this.form.value.password;
     const rpassword = this.form.value.rpassword;
+    const user = new User(username, email, []);
 
     if (password == rpassword) {
       if (this.form.valid) {
-        this.appsService.register(new User(username, password, email, [])).subscribe( // añade la configuración a la base de datos
+        this.appsService.register(user, password).subscribe( // añade la configuración a la base de datos
           res => {
-            this.appsService.login(username, password, true).subscribe(
-              res => {
-                if (res) {
-                  this.router.navigate(['/home']);
-                }
-                else {
-                  this.message = "Se ha registrado el usuario pero no se ha podido iniciar sesión.";
-                }
-              },
-              err => {
-                this.message = "Ha habido un problema al intentar conectar con el servidor para poder iniciar sesión. Inténtelo de nuevo más tarde.";
-              });
+            this.appsService.user = user;
+            this.appsService.saveCoockies();
+            this.router.navigate(['/home']);
           },
           err => {
-            this.message = "El nombre de usuario o correo ya existe en la base de datos. Por favor, prueba con uno diferente.";
+            console.log(err);
+            if (err.status === 409) {
+              this.message = "El nombre de usuario o correo ya está registrado en la aplicación. Por favor, prueba con uno diferente.";
+            }
+            else {
+              this.message = "Hay un problema con el servidor por el cual no se puede registrar una cuenta nueva en estos momentos. Inténtelo de nuevo más tarde.";
+            }
           });
       }
-      else {
-        this.message = "Las contraseñas no coinciden."
-      }
+    }
+    else {
+      this.message = "Las contraseñas no coinciden."
     }
   }
 }

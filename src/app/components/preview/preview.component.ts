@@ -24,7 +24,7 @@ export class PreviewComponent implements OnInit, OnChanges {
   currentStream: MediaStream;
   facingMode: string;
   category: String;
-  output: number;
+  output: any;
   inputShape: any;
 
   constructor(private router: Router, private sanitizer: DomSanitizer, private appsService: AppsService) {
@@ -39,29 +39,30 @@ export class PreviewComponent implements OnInit, OnChanges {
   @Input()
   set application(value: Application) {
     this.app = value;
-    console.log(value);
   }
 
   @Input()
   set applicationAndChargeModel(value: Application) {
     this.app = value;
-    console.log(value);
     this.ngOnInit();
   }
 
   ngOnInit(): void {
+    const url = this.appsService.baseUrl + "/users/" + this.appsService.user.username + "/" + this.app.id + "/model/model.json";
+
     this.video = <HTMLVideoElement>document.getElementById("video");
     this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
     console.log("Cargando modelo...");
-    const url = this.appsService.baseUrl + "/users/" + this.appsService.user.username + "/" + this.app.id + "/model/model.json";
     this.category = "Cargando...";
 
     tf.loadLayersModel(url)
       .then((model) => {
         this.model = model;
         this.inputShape = this.model.inputs[0].shape;
+        //cambia los valores null del array por el valor 1
+        this.inputShape = this.inputShape.map((value) => (value === null ? 1 : value));
         console.log("Modelo cargado. inputShape:" + this.inputShape);
         this.showCam();
       })
@@ -85,7 +86,7 @@ export class PreviewComponent implements OnInit, OnChanges {
     let options = {
       audio: false,
       video: {
-        facingMode: "user", width: this.camWidth, height: this.camHeight
+        facingMode: this.facingMode, width: this.camWidth, height: this.camHeight
       }
     }
 
@@ -120,30 +121,35 @@ export class PreviewComponent implements OnInit, OnChanges {
       //el método tidy() libera la memoria después de ejecutar una serie de operaciones
       tf.tidy(() => {
         let imageData = this.ctx.getImageData(0, 0, this.camWidth, this.camHeight);
-        let imageTensor = tf.browser.fromPixels(imageData).toFloat();
+        let imageTensor = tf.browser.fromPixels(imageData);
+        const sorted: number[] = this.inputShape.slice().sort((a, b) => b - a);
+        const highestValue1: number = sorted[0];
+        const highestValue2: number = sorted[1];
+        let tensor;
 
-        // redimensiona la imagen al tamaño requerido por el tensor
-        if (this.inputShape.length >= 4) {
-          imageTensor = tf.image.resizeBilinear(imageTensor, [this.inputShape[this.inputShape.length - 3], this.inputShape[this.inputShape.length - 2]]);
-        }
-        else {
-          imageTensor = tf.image.resizeBilinear(imageTensor, [this.inputShape[this.inputShape.length - 2], this.inputShape[this.inputShape.length - 1]]);
-        }
+        // redimensiona la imagen a las dimensiones requeridas por el tensor
+        imageTensor = tf.image.resizeBilinear(imageTensor, [highestValue1, highestValue2]);
 
         // convertir la imagen a escala de grises si el modelo utiliza sólo 1 canal de color
-        if (this.inputShape.length < 4 || (this.inputShape.length == 4 && this.inputShape[this.inputShape.length - 1] == 1)) {
+        if (!this.inputShape.includes(3)) {
           imageTensor = imageTensor.mean(2, true);
         }
 
         // normaliza los valores de los píxeles
         imageTensor = imageTensor.div(255);
 
-        let tensor;
-        if (this.inputShape.length >= 4) {
-          tensor = imageTensor.reshape([1, this.inputShape[this.inputShape.length - 3], this.inputShape[this.inputShape.length - 2], this.inputShape[this.inputShape.length - 1]]);
+        try { // intenta con las dimensiones anteriores conseguidas (highestValue1 x highestValue2)
+          tensor = imageTensor.reshape(this.inputShape);
         }
-        else {
-          tensor = imageTensor.reshape([1, this.inputShape[this.inputShape.length - 2], this.inputShape[this.inputShape.length - 1]]);
+        catch (error) {
+          // si no son correctas las dimenesiones es que están al revés, intenta con (highestValue2 x highestValue1)
+          imageTensor = tf.image.resizeBilinear(imageTensor, [highestValue2, highestValue1]);
+
+          if (!this.inputShape.includes(3)) {
+            imageTensor = imageTensor.mean(2, true);
+          }
+          imageTensor = imageTensor.div(255);
+          tensor = imageTensor.reshape(this.inputShape);
         }
 
         this.output = this.model.predict(tensor).dataSync();

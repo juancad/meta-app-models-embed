@@ -7,7 +7,7 @@
         <form [formGroup]="form">
             <div class="form-group">
                 <label for="username">Nombre de usuario *</label>
-                <input type="text" formControlName="username" class="form-control"
+                <input type="text" id="username" name="username" formControlName="username" class="form-control"
                     placeholder="introduce tu nombre de usuario" autocomplete="username">
             </div>
             <p *ngIf="form.get('username').hasError('minlength')" class="text-danger"> El nombre de usuario debe tener
@@ -19,7 +19,7 @@
             <br />
             <div class="form-group">
                 <label for="email">Email *</label>
-                <input type="text" formControlName="email" class="form-control" placeholder="introduce tu email"
+                <input type="text" id="email" name="email" formControlName="email" class="form-control" placeholder="introduce tu email"
                     autocomplete="email">
             </div>
             <p *ngIf="form.get('email').hasError('pattern')" class="text-danger">Email no válido.</p>
@@ -27,8 +27,8 @@
 
             <br />
             <div class="form-group">
-                <label for="exampleInputPassword1">Contraseña *</label>
-                <input type="password" formControlName="password" class="form-control"
+                <label for="password">Contraseña *</label>
+                <input type="password" id="password" name="password" formControlName="password" class="form-control"
                     placeholder="Introduce tu contraseña" autocomplete="password">
             </div>
             <p *ngIf="form.get('password').hasError('minlength')" class="text-danger">La contraseña debe tener un mínimo
@@ -36,16 +36,16 @@
             <p *ngIf="form.get('password').hasError('maxlength')" class="text-danger">Contraseña demasiado grande.</p>
 
             <div class="form-group">
-                <label for="exampleInputPassword1">Repite la contraseña *</label>
-                <input type="password" formControlName="rpassword" class="form-control"
+                <label for="rpassword">Repite la contraseña *</label>
+                <input type="password" id="rpassword" name="rpassword" formControlName="rpassword" class="form-control"
                     placeholder="Repite la contraseña">
             </div>
             <div class="form-group form-check">
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" formControlName="checkbox" value="" id="flexCheckDefault">
-                <label class="form-check-label" for="flexCheckDefault">
-                    He leído y acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <input class="form-check-input" type="checkbox" formControlName="checkbox" value="" id="check">
+                <label class="form-check-label" for="check">
+                    He leído y acepto la <a href="#" data-bs-toggle="modal" data-bs-target="#politica">
                         política de privacidad y cookies
                     </a>
                 </label>
@@ -62,7 +62,7 @@
 </div>
 
 <!-- Política de privadicad -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="politica" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

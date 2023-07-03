@@ -1,0 +1,174 @@
+<app-navbar></app-navbar>
+
+<div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                aria-expanded="true" aria-controls="collapseOne">
+                Cambiar datos del perfil
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <form [formGroup]="formProfile">
+                    <div class="form-group">
+                        <label for="username">Introduce tu nuevo nombre de usuario:</label>
+                        <input type="text" id="username" name="username" formControlName="username" class="form-control"
+                            placeholder="introduce tu nombre de usuario" autocomplete="username">
+                    </div>
+                    <p *ngIf="formProfile.get('username').hasError('minlength') || formProfile.get('username').hasError('required')"
+                        class="text-danger"> El nombre de
+                        usuario debe tener
+                        al menos 4 caracteres.</p>
+                    <p *ngIf="formProfile.get('username').hasError('maxlength')" class="text-danger"> El nombre de
+                        usuario no puede
+                        superar los 20 caracteres.</p>
+                    <p *ngIf="formProfile.get('username').hasError('pattern')" class="text-danger"> El nombre de
+                        usuario sólo puede
+                        contener caracteres alfanuméricos, punto, guión bajo y/o guión.</p>
+                    <br />
+                    <div class="form-group">
+                        <label for="email">Introduce tu nuevo email:</label>
+                        <input type="text" id="email" name="email" formControlName="email" class="form-control"
+                            placeholder="introduce tu email" autocomplete="email">
+                    </div>
+                    <p *ngIf="formProfile.get('email').hasError('required')" class="text-danger">El campo email no
+                        puede estar vacío.</p>
+                    <p *ngIf="formProfile.get('email').hasError('pattern')" class="text-danger">Email no válido.</p>
+                    <p *ngIf="formProfile.get('email').hasError('maxlength')" class="text-danger">Email demasiado
+                        grande.</p>
+                    <br />
+                    <label for="password">Introduce tu contraseña actual para realizar los cambios: *</label>
+                    <input type="password" id="password" name="password" formControlName="password" class="form-control"
+                        autocomplete="password">
+                    <br />
+                    <button [disabled]="!formProfile.valid" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#modalProfile">
+                        Guardar cambios
+                    </button>
+                    <br /><br />
+                    <div *ngIf="profileMessage!=''" class="alert alert-dismissible fade show"
+                        [ngClass]="{'alert-danger': savedProfile === false, 'alert-success': savedProfile === true}"
+                        role="alert">
+                        <i class="bi bi-check-circle-fill" *ngIf="savedProfile"></i>
+                        <i class="bi bi-exclamation-circle-fill" *ngIf="!savedProfile"></i>
+                        {{profileMessage}}
+                        <button type="button" (click)="profileMessage=''" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Cambiar contraseña
+            </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <form [formGroup]="formPassword">
+                    <div class="form-group">
+                        <label for="newpassword">Contraseña nueva:</label>
+                        <input type="password" id="newpassword" name="newpassword" formControlName="newpassword"
+                            class="form-control">
+                    </div>
+                    <p *ngIf="formPassword.get('newpassword').hasError('minlength')" class="text-danger">La contraseña
+                        debe tener un mínimo de 6 caracteres.</p>
+                    <p *ngIf="formPassword.get('newpassword').hasError('maxlength')" class="text-danger">Contraseña
+                        demasiado grande.</p>
+
+                    <div class="form-group">
+                        <label for="rnewpassword">Repite la contraseña nueva:</label>
+                        <input type="password" id="rnewpassword" name="rnewpassword" formControlName="rnewpassword"
+                            class="form-control">
+                    </div>
+                    <br />
+                    <label for="password">Introduce tu contraseña actual para realizar los cambios: *</label>
+                    <input type="password" id="password" name="password" formControlName="password" class="form-control"
+                        autocomplete="password">
+                    <br />
+                    <button [disabled]="!formPassword.valid" type="button" class="btn btn-primary"
+                        data-bs-toggle="modal" data-bs-target="#modalPassword">
+                        Cambiar contraseña
+                    </button>
+                    <br /><br />
+                    <div *ngIf="passwordMessage!=''" class="alert alert-dismissible fade show"
+                        [ngClass]="{'alert-danger': savedPassword === false, 'alert-success': savedPassword === true}"
+                        role="alert">
+                        <i class="bi bi-check-circle-fill" *ngIf="savedPassword"></i>
+                        <i class="bi bi-exclamation-circle-fill" *ngIf="!savedPassword"></i>
+                        {{passwordMessage}}
+                        <button type="button" (click)="passwordMessage=''" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                Eliminar cuenta
+            </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+            data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal perfil -->
+<div class="modal fade" id="modalProfile" tabindex="-1" aria-labelledby="modalProfileLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Guardar cambios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Al pulsar en confirmar se actualizarán los datos de tu perfil por los nuevos, ¿estas seguro de que
+                deseas
+                guardar los cambios?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-warning" (click)="putUser()"
+                    data-bs-dismiss="modal">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal contraseña -->
+<div class="modal fade" id="modalPassword" tabindex="-1" aria-labelledby="modalPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPasswordLabel">Guardar cambios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Al pulsar en confirmar se cambiará tu contraseña por la nueva contraseña nuevos, ¿estas seguro de que
+                deseas
+                cambiarla?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-warning" (click)="changePassword()"
+                    data-bs-dismiss="modal">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<app-footer></app-footer>

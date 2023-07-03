@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AppsService } from 'src/app/services/apps.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -8,15 +8,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   message: string;
   form: FormGroup;
 
   constructor(private appsService: AppsService, private router: Router, private fb: FormBuilder) {
     this.message = "";
-  }
-
-  ngOnInit(): void {
     this.form = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -30,24 +27,27 @@ export class LoginComponent implements OnInit {
     let type: boolean = true;
 
     if (this.form.valid) {
-      if (emailPattern.test(id)) { //si es un correo electrónico
+      if (emailPattern.test(id)) {
         type = false;
       }
       this.appsService.login(id, password, type).subscribe(
         res => {
-          if (res) {
-            this.router.navigate(['/home']);
-          }
-          else {
-            this.message = "Los datos introducidos no se encuentran registrados en la aplicación. Por favor verifica la identificación o la contraseña.";
-          }
+          this.appsService.user = res;
+          this.appsService.saveCoockies();
+          this.router.navigate(['/home']);
         },
         err => {
-          this.message = "Ha habido un problema al intentar conectar con el servidor para poder iniciar sesión. Inténtelo de nuevo más tarde.";
-        });
-    }
-    else {
-      this.message = "No se puede iniciar sesión, por favor introduce todos los datos requeridos."
+          console.log(err.status);
+          if (err.status === 401) {
+            this.message = "Las credenciales no son válidas. Por favor verifica la identificación o la contraseña.";
+          }
+          else {
+            this.message = "Hay un problema con el servidor por el cual no se puede iniciar sesión. Inténtelo de nuevo más tarde.";
+          }
+        }
+      );
+    } else {
+      this.message = "No se puede iniciar sesión, por favor introduce todos los datos requeridos.";
     }
   }
 }

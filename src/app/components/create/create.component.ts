@@ -53,7 +53,6 @@ export class CreateComponent {
       this.app.id = id;
     }
     else {
-      console.log(this.form.controls['id'].errors);
       if (this.form.controls['id'].errors['required']) {
         this.idMessage = "El identificador no puede estar vacío.";
       }
@@ -142,29 +141,47 @@ export class CreateComponent {
           res => {
             this.appsService.uploadModelFIles(this.app.id, this.json, this.bin).subscribe(
               res => {
-                this.errorMessage = "";
-                this.closeModal.nativeElement.click();
-                this.loading = false;
-                this.router.navigate(['/edit'], { queryParams: { id: this.app.id } });
+                this.appsService.getUser().subscribe(
+                  res => {
+                    this.appsService.user = res;
+                    this.appsService.saveCoockies();
+                    this.errorMessage = "";
+                    this.closeModal.nativeElement.click();
+                    this.loading = false;
+                    this.router.navigate(['/edit'], { queryParams: { id: this.app.id } });
+                  },
+                  err => {
+                    console.log(err);
+                    this.loading = false;
+                    this.appsService.logout();
+                    this.router.navigate(['']);
+                  }
+                );
               },
               err => {
-                this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de subir los modelos al servidor.";
-                this.loading = false;
                 console.log(err);
+                this.loading = false;
+                this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de subir los modelos al servidor. Inténtelo de nuevo más tarde.";
+                this.appsService.deleteApp(this.app.id).subscribe();
               }
             )
           },
           err => {
-            this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de crear el directorio: " + this.app.id;
-            this.loading = false;
             console.log(err);
+            this.loading = false;
+            this.errorMessage = "No se ha podido crear la aplicación correctamente. Hubo un error a la hora de crear el directorio. Inténtelo de nuevo más tarde.";
+            this.appsService.deleteApp(this.app.id).subscribe();
           }
         );
       },
       err => {
-        this.errorMessage = "No se ha podido crear la aplicación, el id ya existe.";
+        console.log(err.status);
         this.loading = false;
-        console.log(err);
+        if (err.status === 409) {
+          this.errorMessage = "No se ha podido crear la aplicación, el id ya existe.";
+        } else {
+          this.errorMessage = "Hubo un problema con el servidor a la hora de intentar crear la aplicación. Inténtelo de nuevo más tarde.";
+        }
       }
     );
   }

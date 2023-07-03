@@ -3,73 +3,37 @@ import { Application } from '../models/application.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
-import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppsService {
   baseUrl: string;
-  user: User;
+  user: User = null;
   private loggedInKey = 'loggedInUser';
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient) {
     this.baseUrl = "http://localhost/meta-app-models";
     const storedUser = localStorage.getItem(this.loggedInKey);
     this.user = storedUser ? JSON.parse(storedUser) : null;
   }
 
-  login(id: string, password: string, type: boolean): Observable<boolean> {
+  saveCoockies() {
+    localStorage.setItem(this.loggedInKey, JSON.stringify(this.user));
+  }
+
+  login(id: string, password: string, type: boolean): Observable<User> {
     let url = this.baseUrl;
     const body = { id: id, password: password };
 
     if (type) {
-      url += "/controller/getByUsername.php";
+      url += "/controller/loginByUsername.php";
     }
     else {
-      url += "/controller/getByEmail.php";
+      url += "/controller/loginByEmail.php";
     }
 
-    return new Observable<boolean>(observer => {
-      this.http.post<User>(url, body).subscribe(
-        res => {
-          this.user = res;
-          // Almacenar los datos del usuario en el localStorage
-          localStorage.setItem(this.loggedInKey, JSON.stringify(this.user));
-          observer.next(true);
-          observer.complete();
-        },
-        err => {
-          console.log(err);
-          observer.next(false);
-          observer.complete();
-        }
-      )
-    });
-  }
-
-  register(user: User) {
-    return this.http.post<User>(this.baseUrl + "/controller/postUser.php", JSON.stringify(user));
-  }
-
-  getUser(): Observable<User> {
-    return new Observable<User>(observer => {
-      this.http.get<User>(this.baseUrl + "/controller/getUser.php?username=" + this.user.username).subscribe(
-        res => {
-          this.user = res;
-          // Almacenar los datos del usuario en el localStorage
-          localStorage.setItem(this.loggedInKey, JSON.stringify(this.user));
-          observer.next(res);
-          observer.complete();
-        },
-        err => {
-          console.log(err);
-          observer.next(err);
-          observer.complete();
-          this.router.navigate(['/404']);
-        }
-      )
-    });
+    return this.http.post<User>(url, body);
   }
 
   logout(): void {
@@ -77,8 +41,27 @@ export class AppsService {
     localStorage.removeItem(this.loggedInKey);
   }
 
-  getAppById(id: string): Observable<Application> {
-    return this.http.get<Application>(this.baseUrl + "/controller/getAppById.php?id=" + id + "&username=" + this.user.username);
+  register(user: User, password: string): Observable<User> {
+    const body = { user, password: password };
+    return this.http.post<User>(this.baseUrl + "/controller/postUser.php", JSON.stringify(body));
+  }
+
+  getUser(): Observable<User> {
+    return this.http.get<User>(this.baseUrl + "/controller/getUser.php?username=" + this.user.username);
+  }
+
+  putUser(newusername: string, newemail: string, password: string) {
+    const body = { user: this.user, newusername: newusername, newemail: newemail, password: password };
+    return this.http.put(this.baseUrl + "/controller/putUser.php", JSON.stringify(body));
+  }
+
+  changePassword(password: string, newpassword: string) {
+    const body = { username: this.user.username, password: password, newpassword: newpassword };
+    return this.http.put(this.baseUrl + "/controller/changePassword.php", JSON.stringify(body));
+  }
+
+  getApp(id: string): Observable<Application> {
+    return this.http.get<Application>(this.baseUrl + "/controller/getApp.php?id=" + id + "&username=" + this.user.username);
   }
 
   postApp(app: Application) {

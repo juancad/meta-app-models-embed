@@ -30,7 +30,7 @@
                     aria-labelledby="pills-titulo-tab">
                     <!--Título-->
                     <form [formGroup]="form">
-                        Anterior id: {{app.id}}<br />
+                        Anterior id: {{appId}}<br />
                         <div class="input-group id">
                             <span class="input-group-text" id="inputGroup-sizing-default">Id de la aplicación</span>
                             <input #id (ngModelChange)="setId(id.value)" type="text" formControlName="id"
@@ -149,23 +149,23 @@
             <i class="bi bi-check-circle-fill" *ngIf="saved"></i>
             <i class="bi bi-exclamation-circle-fill" *ngIf="!saved"></i>
             {{saveMessage}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" (click)="saveMessage=''" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
         <div *ngIf="errorMessage!=''" class="alert alert-danger" role="alert">{{errorMessage}}</div>
 
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal"
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal"
             [disabled]="errorMessage!=''">
             Guardar cambios
         </button>
 
         <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Guardar cambios</h5>
+                        <h5 class="modal-title" id="modalLabel">Guardar cambios</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
