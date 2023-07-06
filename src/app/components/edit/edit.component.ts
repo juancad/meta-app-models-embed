@@ -13,6 +13,9 @@ import { Router } from '@angular/router';
   templateUrl: './edit.component.html',
   styleUrls: ['./edit.component.scss']
 })
+/**
+ * Componente para el editor de aplicaciones.
+ */
 export class EditComponent {
   @Input() appId: string;
   app: Application;
@@ -124,10 +127,17 @@ export class EditComponent {
 
   }
 
+  /**
+   * Añade una nueva categoría a la lista de categorías de la instancia de Application.
+   */
   addCategory() {
     this.app.categories.push(new Category("Nombre categoría", null, null));
   }
 
+  /**
+   * Eliimna una categoría de la lista de categoráis de la instancia de Application.
+   * @param category categoría a eliminar
+   */
   deleteCategory(category: Category) {
     const index = this.app.categories.indexOf(category);
     if (index !== -1) {
@@ -135,6 +145,10 @@ export class EditComponent {
     }
   }
 
+  /**
+   * Cambia el título de la instancia de Application recogiendo los datos del editor del título, si tiene la longitud adecuada.
+   * @param newTitle nuevo título de la aplicación
+   */
   setTitle(newTitle: any) {
     if (!this.form.controls['title'].errors) {
       this.errorMessage = "";
@@ -152,6 +166,10 @@ export class EditComponent {
     }
   }
 
+  /**
+  * Cambia la descripción de la instancia de Application recogiendo los datos del editor de la descripción, si tiene la longitud adecuada.
+  * @param newTitle nuevo título de la aplicación
+  */
   setDescription(newDescription: any) {
     if (!this.form.controls['description'].errors) {
       this.errorMessage = "";
@@ -165,6 +183,10 @@ export class EditComponent {
     }
   }
 
+  /**
+   * Cambia el id de la instancia de Application recogiendo el dato del formulario si cumple con las normas del id.
+   * @param id nuevo id de la aplicación
+   */
   setId(id: string) {
     if (!this.form.controls['id'].errors) {
       this.errorMessage = "";
@@ -184,10 +206,20 @@ export class EditComponent {
     }
   }
 
+  /**
+   * Cambia la alineación de la cámara de la isntancia de Application.
+   * @param camAlign nueva alineación de la cámara
+   */
   setCamAlign(camAlign: Align) {
     this.app.style.camAlign = camAlign;
   }
 
+  /**
+   * Guarda los cambios, utilizando el método putApp del servicio. Se pasa la instancia de Application con los cambios realizados por el usuario y el anterior id de la aplicación.
+   * Genera y sube los archivos nuevos de la aplicación al servidor, utilizando el método uploadAppFiles.
+   * Una vez guardados los cambios y subidos los archivos vuelve a cargar la información del usuario con los nuevos cambios en la instancia del servicio y las cookies. Vuelve a cargar el editor con el nuevo id de aplicación por si ha cambiado.
+   * Si se producen errores los muestra en el mensaje.
+   */
   saveChanges() {
     if (this.form.valid) {
       this.appsService.putApp(this.app, this.appId).subscribe(

@@ -8,6 +8,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AppComponent } from './app.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { AboutComponent } from './components/about/about.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', component: AppComponent },
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'edit', component: EditComponent },
   { path: 'help', component: HelpComponent },
+  { path: 'about', component: AboutComponent },
   { path: '404', component: Error404Component },
   { path: '**', redirectTo: '/404' }
 ];

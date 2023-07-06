@@ -5,6 +5,9 @@ import { Component } from '@angular/core';
   templateUrl: './error404.component.html',
   styleUrls: ['./error404.component.scss']
 })
+/**
+ * Componente para la página de error 404.
+ */
 export class Error404Component {
 
 }

@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
 
-<div class="accordion" id="accordionExample">
+<div class="accordion" id="accordionExample" *ngIf="!deletedAccount">
     <div class="accordion-item">
         <h2 class="accordion-header" id="headingOne">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
@@ -120,7 +120,25 @@
         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
             data-bs-parent="#accordionExample">
             <div class="accordion-body">
-
+                <form [formGroup]="formDelete">
+                    <br />
+                    <label for="password">Introduce tu contraseña actual para eliminar la cuenta: *</label>
+                    <input type="password" id="password" name="password" formControlName="password" class="form-control"
+                        autocomplete="password">
+                    <br />
+                    <button [disabled]="!formDelete.valid" type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#modalDelete">
+                        Eliminar cuenta
+                    </button>
+                    <br/><br/>
+                    <div *ngIf="deletedMessage!=''" class="alert alert-dismissible fade show alert-danger"
+                        role="alert">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                        {{deletedMessage}}
+                        <button type="button" (click)="deletedMessage=''" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -158,8 +176,7 @@
             </div>
             <div class="modal-body">
                 Al pulsar en confirmar se cambiará tu contraseña por la nueva contraseña nuevos, ¿estas seguro de que
-                deseas
-                cambiarla?
+                deseas cambiarla?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -170,5 +187,29 @@
     </div>
 </div>
 
+<!-- Modal eliminar cuenta -->
+<div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="modalDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDeleteLabel">Eliminar cuenta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Al pulsar en confirmar se borrarán todos tus datos de usuario y aplicaciones del servidor. ¿estás seguro
+                de que deseas eliminar tu cuenta?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-warning" (click)="deleteAccount()"
+                    data-bs-dismiss="modal">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div *ngIf="deletedAccount" class="alert alert-info" style="margin: 10px" role="alert">
+    Se ha eliminado correctamente tu cuenta de usuario. </div>
 
 <app-footer></app-footer>

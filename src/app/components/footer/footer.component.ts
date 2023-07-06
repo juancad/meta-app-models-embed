@@ -5,6 +5,9 @@ import { Component } from '@angular/core';
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })
+/**
+ * Componente para el pide de página.
+ */
 export class FooterComponent {
 
 }

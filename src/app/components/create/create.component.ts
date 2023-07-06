@@ -11,14 +11,17 @@ import * as tf from '@tensorflow/tfjs';
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.scss']
 })
+/**
+ * Componente para el creador de aplicaciones.
+ */
 export class CreateComponent {
   @ViewChild('close') closeModal;
   app: Application;
   idMessage: string;
-  json: File;
+  json: File; // archivo model.json cargado
   jsonMessage: string;
   jsonFormat: boolean;
-  bin: FileList;
+  bin: FileList; // lista de archivos binarios cargados
   binMessage: string;
   binFormat: boolean;
   form: FormGroup;
@@ -47,6 +50,10 @@ export class CreateComponent {
     });
   }
 
+  /**
+   * Establece el id de la aplicación si cumple con las normas establecidas en el formulario.
+   * @param id id de la aplicación
+   */
   setId(id: string) {
     if (!this.form.controls['id'].errors) {
       this.idMessage = "";
@@ -65,6 +72,10 @@ export class CreateComponent {
     }
   }
 
+  /**
+   * Controla que el archivo seleccionado como modelo sea correcto (nombre model.json) y lo establece.
+   * @param event archivo seleccionado en el selector
+   */
   selectJSON(event: any) {
     const file: File = event.target.files[0];
     if (file) {
@@ -80,6 +91,10 @@ export class CreateComponent {
     }
   }
 
+  /**
+   * Controla que los archivos seleccionados como binarios sean correctos (sigan el patrón) y los establece.
+   * @param event archivos seleccionados en el selector
+   */
   selectBIN(event: any) {
     const files: FileList = event.target.files;
     const pattern = /^group\d+-shard\d+of\d+\.bin$/;
@@ -104,6 +119,9 @@ export class CreateComponent {
     }
   }
 
+  /**
+   * Verifica que se pueda crear la aplicación llamando a la función loadLayersModel de TensorFlow.js. Si el modelo no es compatible con la función no se creará la aplicación.
+   */
   async onCreate() {
     if (this.form.valid && this.jsonFormat && this.binFormat) {
       this.loading = true;
@@ -118,15 +136,8 @@ export class CreateComponent {
         })
         .catch(error => {
           console.log(error);
-          tf.loadGraphModel(modelIOHandler)
-            .then(model => {
-              this.postApp();
-            })
-            .catch(error => {
-              console.log(error);
-              this.errorMessage = "El modelo seleccionado no es un modelo compatible con esta aplicación. Por favor, lee la <a href=\"/help\">ayuda</a> para más información.";
-              this.loading = false;
-            });
+          this.errorMessage = "El modelo seleccionado no es un modelo compatible con esta aplicación. Por favor, lee la <a href=\"/help\">ayuda</a> para más información. Error: " + error;
+          this.loading = false;
         });
     }
     else {
@@ -134,6 +145,10 @@ export class CreateComponent {
     }
   }
 
+  /**
+   * Crea la nueva aplicación utilizando la función postApp del servicio, genera y sube los archivos de la aplicación y sube los archivos del modelo.
+   * Si se crea y se sube correctamente se cargan los datos del usuario para actualizar su lista de aplicaciones y se navega hasta el editor de aplicaciones para que pueda editar la aplicación creada.
+   */
   postApp() {
     this.appsService.postApp(this.app).subscribe( // añade la configuración a la base de datos
       res => {

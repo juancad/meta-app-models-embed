@@ -6,8 +6,8 @@ Vista previa de la aplicación:
     <br />
     <div [ngStyle]="{'text-align': getCamAlign()}">
         <video id="video" [width]="camWidth" [height]="camHeight" autoplay loop muted playsinline hidden></video>
-        <canvas id="canvas" [width]="camWidth" [height]="camHeight" style="max-width: 100%;"></canvas>
-        <button id="cambiarCamara" class="btn btn-light" aria-label="Rotar cámara" (click)=cambiarCamara()><i
+        <canvas id="canvas" [width]="camWidth" [height]="camHeight"></canvas>
+        <button id="rotateCamera" class="btn btn-light" aria-label="Rotar cámara" (click)=rotateCamera()><i
                 class="bi bi-arrow-repeat"></i></button>
 
         <h2>Resultado: {{category}}</h2>

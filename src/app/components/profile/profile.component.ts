@@ -11,16 +11,21 @@ import { AppsService } from 'src/app/services/apps.service';
 export class ProfileComponent {
   formProfile: FormGroup;
   formPassword: FormGroup;
+  formDelete: FormGroup;
   profileMessage: string;
   passwordMessage: string;
+  deletedMessage: string;
   savedProfile: boolean;
   savedPassword: boolean;
+  deletedAccount: boolean;
 
   constructor(private appsService: AppsService, private fb: FormBuilder, private router: Router) {
     this.profileMessage = '';
     this.passwordMessage = '';
+    this.deletedMessage = '';
     this.savedProfile = false;
     this.savedPassword = false;
+    this.deletedAccount = false;
 
     if (this.appsService.user == null) {
       this.router.navigate(['/404']);
@@ -35,6 +40,10 @@ export class ProfileComponent {
     this.formPassword = this.fb.group({
       newpassword: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(60)]],
       rnewpassword: ['', [Validators.required]],
+      password: ['', [Validators.required]]
+    });
+
+    this.formDelete = this.fb.group({
       password: ['', [Validators.required]]
     });
   }
@@ -65,6 +74,26 @@ export class ProfileComponent {
     }
     else {
       this.passwordMessage = "Las contraseñas no coinciden.";
+    }
+  }
+
+  deleteAccount() {
+    if (this.formDelete.valid) {
+      this.appsService.deleteUser(this.formDelete.value.password).subscribe(
+        res => {
+          this.deletedAccount = true;
+          this.appsService.logout();
+        },
+        err => {
+          console.log(err);
+          if (err.status == 401) {
+            this.deletedMessage = "La contraseña introducida no es correcta, por favor introduce la contraseña correctamente."
+          }
+          else {
+            this.deletedMessage = "Hay un problema con el servidor por el cual no se puede eliminar tu cuenta en estos momentos. Inténtelo de nuevo más tarde.";
+          }
+        }
+      );
     }
   }
 

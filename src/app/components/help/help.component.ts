@@ -5,6 +5,9 @@ import { Component } from '@angular/core';
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss']
 })
+/**
+ * Componente para la página de ayuda.
+ */
 export class HelpComponent {
 
 }

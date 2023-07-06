@@ -8,6 +8,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
+/**
+ * Componente para contener el formulario de inicio de sesión de la aplicación.
+ */
 export class LoginComponent {
   message: string;
   form: FormGroup;
@@ -20,6 +23,13 @@ export class LoginComponent {
     });
   }
 
+  /**
+   * Función para iniciar sesión. Recoge los datos del formulario, verifica si se ha introducido un email o no con el patrón del email.
+   * type será verdadero si se ha introducido un id, y falso si se ha introducido un email.
+   * Llama a la función login del servicio.
+   * Si se ha iniciado correctamente la sesión guarda el usuario en el servicio y las cookies y navega a home.
+   * Si no se ha iniciado correctamente la sesión muestra el mensaje de error correspondiente.
+   */
   login() {
     const id = this.form.value.username;
     const password = this.form.value.password;

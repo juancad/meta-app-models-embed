@@ -25,6 +25,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 
 //services
 import { AppsService } from './services/apps.service';
+import { AboutComponent } from './components/about/about.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { AppsService } from './services/apps.service';
     CreateComponent,
     LoginComponent,
     RegisterComponent,
-    ProfileComponent
+    ProfileComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,

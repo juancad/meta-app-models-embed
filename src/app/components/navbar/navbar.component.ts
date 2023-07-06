@@ -7,19 +7,13 @@ import { Router } from '@angular/router';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
+/**
+ * Componente para contener la barra de navegación de la aplicación-
+ */
 export class NavbarComponent {
   title: String;
 
   constructor(private appsService: AppsService, private router: Router) {
     this.title = "Incrustado de modelos";
-  }
-
-  getUsername(): string {
-    return this.appsService.user.username;
-  }
-  
-  logout() {
-    this.appsService.logout();
-    this.router.navigate(['']);
   }
 }

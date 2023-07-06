@@ -11,6 +11,9 @@ import { AppsService } from 'src/app/services/apps.service';
   templateUrl: './preview.component.html',
   styleUrls: ['./preview.component.scss']
 })
+/**
+ * Comopnente que permite mostrar la vista previa de la aplicación. Contiene los métodos necesarios para cargar el modelo, mostrar la cámara y predecir el resultado utilizando el modelo.
+ */
 export class PreviewComponent implements OnInit, OnChanges {
   app: Application;
   HTMLTitle: SafeHtml;
@@ -36,11 +39,18 @@ export class PreviewComponent implements OnInit, OnChanges {
     this.output = 0;
   }
 
+  /**
+   * Recibe una instancia de Application del componente padre.
+   */
   @Input()
   set application(value: Application) {
     this.app = value;
   }
 
+  /**+
+   * Recibe una instancia de Application del componente padre y vuelve a cargar el modelo 
+   * (para cuando se elige una aplicación nueva de una lista cargar el nuevo modelo)
+   */
   @Input()
   set applicationAndChargeModel(value: Application) {
     this.app = value;
@@ -54,9 +64,12 @@ export class PreviewComponent implements OnInit, OnChanges {
     this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
     this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
 
-    console.log("Cargando modelo...");
+    console.log("Cargando...");
     this.category = "Cargando...";
 
+    /**
+     * Función que carga el modelo utilizando TensorFlow.js, si el modelo se carga se muestra la cámara llamando a la función showCam.
+     */
     tf.loadLayersModel(url)
       .then((model) => {
         this.model = model;
@@ -75,13 +88,16 @@ export class PreviewComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Cada vez que cambie los valores del @input se ejecuta este método
+   * Cada vez que cambie los valores del @input se ejecuta este método para sanitizar el contenido del título y descripción y guardarlos como HTML.
    */
   ngOnChanges(changes: SimpleChanges) {
     this.HTMLTitle = this.sanitizer.bypassSecurityTrustHtml(this.app.title);
     this.HTMLDesc = this.sanitizer.bypassSecurityTrustHtml(this.app.description);
   }
 
+  /**
+   * Función que permite obtener los permisos del usuario para mostrar la cámara.
+   */
   showCam() {
     let options = {
       audio: false,
@@ -111,11 +127,18 @@ export class PreviewComponent implements OnInit, OnChanges {
     }
   }
 
+  /**
+   * Muestra la imagen de la cámara periódicamente. El tiempo se establece usando la función setTimeout, establecido en milisegundos.
+   */
   processCamera() {
     this.ctx.drawImage(this.video, 0, 0, this.camWidth, this.camHeight, 0, 0, this.camWidth, this.camHeight);
     setTimeout(this.processCamera.bind(this), 20);
   }
 
+  /**
+   * Funcíon que predice el resultado utiilzando la función predict de TensorFlow.js. El resultado es almacenado en el atributo output y la categoría en category. 
+   * La predicción se hace de forma periódica, el tiempo se establece en setTimeout en milisegundos.
+   */
   predict() {
     if (this.model != null) {
       //el método tidy() libera la memoria después de ejecutar una serie de operaciones
@@ -131,21 +154,21 @@ export class PreviewComponent implements OnInit, OnChanges {
         imageTensor = tf.image.resizeBilinear(imageTensor, [highestValue1, highestValue2]);
 
         // convertir la imagen a escala de grises si el modelo utiliza sólo 1 canal de color
-        if (!this.inputShape.includes(3)) {
+        if (!this.inputShape.includes(2) && !this.inputShape.includes(3) && !this.inputShape.includes(4)) {
           imageTensor = imageTensor.mean(2, true);
         }
 
         // normaliza los valores de los píxeles
         imageTensor = imageTensor.div(255);
 
-        try { // intenta con las dimensiones anteriores conseguidas (highestValue1 x highestValue2)
+        try { // intenta con las dimensiones anteriores conseguidas ([1,highestValue1, highestValue2]), en keras suele ser [1,altura,anchura]
           tensor = imageTensor.reshape(this.inputShape);
         }
         catch (error) {
-          // si no son correctas las dimenesiones es que están al revés, intenta con (highestValue2 x highestValue1)
+          // si no son correctas las dimenesiones están al revés ([1,highestValue2, highestValue1])
           imageTensor = tf.image.resizeBilinear(imageTensor, [highestValue2, highestValue1]);
 
-          if (!this.inputShape.includes(3)) {
+          if (!this.inputShape.includes(2) && !this.inputShape.includes(3) && !this.inputShape.includes(4)) {
             imageTensor = imageTensor.mean(2, true);
           }
           imageTensor = imageTensor.div(255);
@@ -175,10 +198,13 @@ export class PreviewComponent implements OnInit, OnChanges {
       }
     }
 
-    setTimeout(this.predict.bind(this), 100);
+    setTimeout(this.predict.bind(this), 150);
   }
 
-  cambiarCamara() {
+  /**
+   * Cambia el visor de la cámara a la trasera (enviroment) si se usa la delantera (user) o viceversa.
+   */
+  rotateCamera() {
     if (this.currentStream) {
       this.currentStream.getTracks().forEach((track: { stop: () => void; }) => {
         track.stop();
@@ -206,6 +232,10 @@ export class PreviewComponent implements OnInit, OnChanges {
       })
   }
 
+  /**
+   * Permite obtener la alineación de la cámara en texto.
+   * @returns alineación de la cámara en texto
+   */
   getCamAlign(): string {
     return Align[this.app.style.camAlign];
   }
