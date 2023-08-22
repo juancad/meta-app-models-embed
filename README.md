@@ -1,12 +1,18 @@
 # Meta-aplicación web para el incrustado de modelos de IA
 
 ## Contenidos 
-1. [Descripción](#intro)
-2. [Contenido del proyecto](#contenido)
-3. [Despliegue](#despliegue)
-4. [Visualización](#visualizacion)
+1. [Demo](#demo)
+2. [Descripción](#intro)
+3. [Contenido del proyecto](#contenido)
+4. [Despliegue](#despliegue)
+5. [Visualización](#visualizacion)
 
-## 1. Descripción <a name="intro"/>
+## 1. Demo <a name="intro"/>
+En el siguiente enlace puede ejecutarse una demo que no utiliza la API, por lo que algunas funcionalidades están desactivadas y sólo se permiten crear aplicaciones con los modelos por disponibles por defecto:
+
+https://juancad.github.io/meta-app-models-embed/
+
+## 2. Descripción <a name="intro"/>
 
 El proyecto se trata de una meta-aplicación para el incrustado de modelos de TensorFlow.js para la clasificación de imágenes.
 
@@ -14,13 +20,13 @@ La meta-aplicación permite subir modelos de IA previamente entrenados y optimiz
 
 El modelo subido a la aplicación es almacenado en el servidor, junto con los archivos que genera la meta-aplicación para su ejecución. Los archivos generados permitirán ejecutar la aplicación creada en el navegador. En la meta-aplicación se permitirá la visualización de aplicaciones mediante una vista previa, la edición de aplicaciones mediante un editor que muestra en tiempo real los cambios realizados por el usuario, la descarga de la aplicación creada, la visualización accediendo a la ruta de la aplicación creada y la eliminación de aplicaciones.
 
-## 2. Contenido del proyecto <a name="contenido"/>
+## 3. Contenido del proyecto <a name="contenido"/>
 
 - En el directorio [dist/meta-app-models-embed](dist/meta-app-models-embed) se encuentra el desplegable de la aplicación con los archivos php para la conexión con la base de datos.
 - En el directorio [src](src) se encuentra el código fuente.
 - El archivo [dist/base_de_datos.sql](dist/base_de_datos.sql) contiene las tablas de la base de datos de la aplicación.
 
-## 3. Despliegue <a name="despliegue"/>
+## 4. Despliegue <a name="despliegue"/>
 
 El despliegue de la aplicación se ha realizado en un servidor Apache. Para poder desplegarla, será descargar los archivos necesarios del directorio `dist` y realizar los siguientes pasos:
 
@@ -60,7 +66,7 @@ El proyecto ha sido desarrollado en Angular, utilizando como IDE: Visual Studio 
 - inicia el servidor de desarrollo con el comando: `ng serve`
 - Abrir el enlace `http://localhost:4200` en el navegador.
 
-## Visualización <a name="visualizacion"/>
+## 5. Visualización <a name="visualizacion"/>
 
 La meta-aplicación permite el incrustado de modelos de TensorFlow.js Para poder importarlos se debe de exportar un modelo de Keras como modelo de TensorFlow.js siguiendo el tutorial: https://www.tensorflow.org/js/tutorials/conversion/import_keras?hl=es-419
 
