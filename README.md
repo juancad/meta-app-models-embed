@@ -7,7 +7,7 @@
 4. [Despliegue](#despliegue)
 5. [Visualización](#visualizacion)
 
-## 1. Demo <a name="intro"/>
+## 1. Demo <a name="demo"/>
 En el siguiente enlace puede ejecutarse una demo que no utiliza la API, por lo que algunas funcionalidades están desactivadas y sólo se permiten crear aplicaciones con los modelos por disponibles por defecto:
 
 https://juancad.github.io/meta-app-models-embed/
